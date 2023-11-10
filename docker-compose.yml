@@ -1,0 +1,21 @@
+version: "3.6"
+services:
+
+  authenticationservice:
+    image: "ghcr.io/nager/nager.authenticationservice:latest"
+    environment:
+      CONNECTIONSTRINGS__DEFAULT: Server=database;Database=AuthenticationService;User Id=sa;Password=yourStrong(!)Password;MultipleActiveResultSets=true;TrustServerCertificate=true;
+      ASPNETCORE_ENVIRONMENT: Development
+      AUTHENTICATION__TOKENS__ISSUER: ChangeMe
+      AUTHENTICATION__TOKENS__AUDIENCE: ChangeMe
+      AUTHENTICATION__TOKENS__SIGNINGKEY: ChangeMe
+    ports:
+      - 80:80
+    depends_on:
+      - database
+
+  database:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    environment:
+      ACCEPT_EULA: Y
+      SA_PASSWORD: yourStrong(!)Password
