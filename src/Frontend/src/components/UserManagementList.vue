@@ -54,7 +54,7 @@ const columns : QTableProps['columns'] = [
     name: 'actions',
     required: true,
     label: 'Actions',
-    align: 'left',
+    align: 'right',
     field: 'actions'
   }
 ]
@@ -89,25 +89,32 @@ async function getUsers () {
 }
 
 async function removeRow (row : User) {
-  const response = await fetch(`/api/v1/UserManagement/${row.id}`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-      'Content-Type': 'application/json'
-    }
-  })
-
-  if (response.status !== 204) {
-    $q.notify({
-      type: 'negative',
-      message: 'Request failure',
-      caption: response.statusText
+  $q.dialog({
+    title: 'Delete User',
+    message: 'Do you really want to delete?',
+    cancel: true,
+    persistent: true
+  }).onOk(async () => {
+    const response = await fetch(`/api/v1/UserManagement/${row.id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token.value}`,
+        'Content-Type': 'application/json'
+      }
     })
 
-    return
-  }
+    if (response.status !== 204) {
+      $q.notify({
+        type: 'negative',
+        message: 'Request failure',
+        caption: response.statusText
+      })
 
-  await getUsers()
+      return
+    }
+
+    await getUsers()
+  })
 }
 
 async function editRow (row : User) {
@@ -132,12 +139,15 @@ onMounted(async () => {
 </script>
 
 <template>
-  <q-btn
-    class="q-mb-sm"
-    outline
-    label="Add User"
-    @click="showAddDialog = true"
-  />
+  <div class="text-right">
+    <q-btn
+      class="q-mb-sm"
+      outline
+      icon="person"
+      label="Add User"
+      @click="showAddDialog = true"
+    />
+  </div>
 
   <q-table
     flat
@@ -148,6 +158,31 @@ onMounted(async () => {
     row-key="name"
     :loading="loading"
   >
+    <template #body-cell-firstname="props">
+      <q-td :props="props">
+        {{ props.row.firstname }}
+      </q-td>
+    </template>
+
+    <template #body-cell-lastname="props">
+      <q-td :props="props">
+        {{ props.row.lastname }}
+      </q-td>
+    </template>
+
+    <template #body-cell-roles="props">
+      <q-td :props="props">
+        <q-badge
+          v-for="role in props.row.roles"
+          :key="role"
+          outline
+          color="blue"
+          :label="role"
+          class="q-mr-sm q-pa-sm"
+        />
+      </q-td>
+    </template>
+
     <template #body-cell-actions="props">
       <q-td :props="props">
         <q-btn

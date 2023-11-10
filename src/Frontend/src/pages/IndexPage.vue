@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import TimeInfo from '../components/TimeInfo.vue'
 </script>
 
 <template>
   <q-page padding>
-    <TimeInfo />
+    Welcome in the Admin Area
   </q-page>
 </template>

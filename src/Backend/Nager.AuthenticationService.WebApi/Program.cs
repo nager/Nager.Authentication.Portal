@@ -15,18 +15,6 @@ var users = new UserInfoWithPassword[]
 {
     new UserInfoWithPassword
     {
-        EmailAddress = "user1@domain.com",
-        Password = "password",
-        Roles = new [] { "invoice-view" }
-    },
-    new UserInfoWithPassword 
-    {
-        EmailAddress = "user2@domain.com",
-        Password = "password",
-        Roles = new [] { "invoice-view", "invoice-create" }
-    },
-    new UserInfoWithPassword
-    {
         EmailAddress = "admin@domain.com",
         Password = "password",
         Roles = new [] { "administrator" }
@@ -36,9 +24,6 @@ var users = new UserInfoWithPassword[]
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
-
-
-//builder.Services.AddSingleton<IUserRepository, InMemoryUserRepository>();
 
 builder.Services.AddDbContextPool<DatabaseContext>(options =>
 {
@@ -94,14 +79,6 @@ builder.Services.AddSwaggerGen(configuration =>
 
     #endregion
 
-    configuration.SwaggerDoc("general", new OpenApiInfo
-    {
-        Title = "General Documentation",
-        Description = "",
-        Contact = null,
-        Version = "v1"
-    });
-
     configuration.SwaggerDoc("authentication", new OpenApiInfo
     {
         Title = "Authentication Documentation",
@@ -154,7 +131,6 @@ if (app.Environment.IsDevelopment())
     {
         configuration.EnableTryItOutByDefault();
         configuration.DisplayRequestDuration();
-        configuration.SwaggerEndpoint("/swagger/general/swagger.json", "General");
         configuration.SwaggerEndpoint("/swagger/authentication/swagger.json", "Authentication");
         configuration.SwaggerEndpoint("/swagger/usermanagement/swagger.json", "UserManagement");
         configuration.SwaggerEndpoint("/swagger/useraccount/swagger.json", "UserAccount");
@@ -162,8 +138,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
+
 app.UseDefaultFiles();
-app.UseStaticFiles(new StaticFileOptions { ServeUnknownFileTypes = true });
+app.UseStaticFiles();
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -171,6 +148,7 @@ app.UseAuthorization();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
+    endpoints.MapFallbackToFile("index.html");
 });
 
 app.Run();
