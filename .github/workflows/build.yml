@@ -103,5 +103,5 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
     - name: Build and push the Docker image
       run: |
-        docker build ./src --file src/Dockerfile --tag ghcr.io/nager/nager.authenticationservice:latest
+        docker build . --file src/Dockerfile --tag ghcr.io/nager/nager.authenticationservice:latest
         docker push ghcr.io/nager/nager.authenticationservice:latest
