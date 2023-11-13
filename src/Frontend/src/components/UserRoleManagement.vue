@@ -3,6 +3,8 @@ import { ref, computed } from 'vue'
 import type { PropType } from 'vue'
 import { LocalStorage, useQuasar } from 'quasar'
 
+import { apiBaseUrl } from '../helpers/apiHelper'
+
 import { User } from 'src/models/User'
 
 const $q = useQuasar()
@@ -25,7 +27,7 @@ const token = computed(() => {
 })
 
 async function addRoleToUser () {
-  const response = await fetch(`/api/v1/UserManagement/${props.user.id}/Role`, {
+  const response = await fetch(`${apiBaseUrl}UserManagement/${props.user.id}/Role`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token.value}`,
@@ -51,7 +53,7 @@ async function addRoleToUser () {
 }
 
 async function removeRoleFromUser (roleName : string) {
-  const response = await fetch(`/api/v1/UserManagement/${props.user.id}/Role`, {
+  const response = await fetch(`${apiBaseUrl}UserManagement/${props.user.id}/Role`, {
     method: 'DELETE',
     headers: {
       Authorization: `Bearer ${token.value}`,

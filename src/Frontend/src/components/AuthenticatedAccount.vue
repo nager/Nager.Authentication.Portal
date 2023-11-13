@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar, LocalStorage } from 'quasar'
 
+import { apiBaseUrl } from '../helpers/apiHelper'
 import { parseToken } from '../helpers/tokenHelper'
 
 const $q = useQuasar()
@@ -28,7 +29,7 @@ async function logout () {
 }
 
 async function changePassword () {
-  const response = await fetch('/api/v1/UserAccount/ChangePassword', {
+  const response = await fetch(`${apiBaseUrl}UserAccount/ChangePassword`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token.value}`,

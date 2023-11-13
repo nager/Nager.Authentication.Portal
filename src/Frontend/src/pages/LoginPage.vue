@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar, LocalStorage } from 'quasar'
 
+import { apiBaseUrl } from '../helpers/apiHelper'
+
 const $q = useQuasar()
 const Router = useRouter()
 
@@ -13,7 +15,7 @@ const password = ref('')
 async function login () {
   loading.value = true
   try {
-    const response = await fetch('/api/v1/Authentication', {
+    const response = await fetch(`${apiBaseUrl}Authentication`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

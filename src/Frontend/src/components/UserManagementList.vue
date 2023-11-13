@@ -4,6 +4,8 @@ import { QTableProps, useQuasar, LocalStorage } from 'quasar'
 
 import { User } from 'src/models/User'
 
+import { apiBaseUrl } from '../helpers/apiHelper'
+
 import DefaultDialog from './DefaultDialog.vue'
 import UserEditForm from './UserEditForm.vue'
 import UserRoleManagement from './UserRoleManagement.vue'
@@ -67,7 +69,7 @@ async function getUsers () {
   try {
     loading.value = true
 
-    const response = await fetch('/api/v1/UserManagement', {
+    const response = await fetch(`${apiBaseUrl}UserManagement`, {
       headers: {
         Authorization: `Bearer ${token.value}`,
         'Content-Type': 'application/json'
@@ -95,7 +97,7 @@ async function removeRow (row : User) {
     cancel: true,
     persistent: true
   }).onOk(async () => {
-    const response = await fetch(`/api/v1/UserManagement/${row.id}`, {
+    const response = await fetch(`${apiBaseUrl}UserManagement/${row.id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token.value}`,

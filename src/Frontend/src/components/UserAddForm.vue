@@ -2,6 +2,8 @@
 import { computed, ref } from 'vue'
 import { LocalStorage, useQuasar } from 'quasar'
 
+import { apiBaseUrl } from '../helpers/apiHelper'
+
 import { UserAdd } from 'src/models/UserAdd'
 
 const $q = useQuasar()
@@ -17,7 +19,7 @@ const token = computed(() => {
 })
 
 async function create () {
-  const response = await fetch('/api/v1/UserManagement/', {
+  const response = await fetch(`${apiBaseUrl}UserManagement/`, {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${token.value}`,

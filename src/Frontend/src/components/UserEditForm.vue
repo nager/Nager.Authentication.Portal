@@ -3,6 +3,8 @@ import { ref, onMounted, computed } from 'vue'
 import type { PropType } from 'vue'
 import { LocalStorage, useQuasar } from 'quasar'
 
+import { apiBaseUrl } from '../helpers/apiHelper'
+
 import { User } from 'src/models/User'
 import { UserEdit } from 'src/models/UserEdit'
 
@@ -35,7 +37,7 @@ const token = computed(() => {
 })
 
 async function updateUser () {
-  const response = await fetch(`/api/v1/UserManagement/${props.user.id}`, {
+  const response = await fetch(`${apiBaseUrl}UserManagement/${props.user.id}`, {
     method: 'PUT',
     headers: {
       Authorization: `Bearer ${token.value}`,
