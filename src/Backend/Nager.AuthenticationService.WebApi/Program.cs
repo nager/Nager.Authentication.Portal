@@ -86,7 +86,7 @@ builder.Services.AddSwaggerGen(configuration =>
 
     #endregion
 
-    configuration.SwaggerDoc("authentication", new OpenApiInfo
+    configuration.SwaggerDoc("Authentication", new OpenApiInfo
     {
         Title = "Authentication Documentation",
         Description = "Authentication",
@@ -94,7 +94,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Version = "v1"
     });
 
-    configuration.SwaggerDoc("usermanagement", new OpenApiInfo
+    configuration.SwaggerDoc("UserManagement", new OpenApiInfo
     {
         Title = "UserManagement Documentation",
         Description = "UserManagement",
@@ -102,7 +102,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Version = "v1"
     });
 
-    configuration.SwaggerDoc("useraccount", new OpenApiInfo
+    configuration.SwaggerDoc("UserAccount", new OpenApiInfo
     {
         Title = "UserAccount Documentation",
         Description = "UserAccount",
@@ -140,9 +140,9 @@ if (app.Environment.IsDevelopment())
     {
         configuration.EnableTryItOutByDefault();
         configuration.DisplayRequestDuration();
-        configuration.SwaggerEndpoint("/swagger/authentication/swagger.json", "Authentication");
-        configuration.SwaggerEndpoint("/swagger/usermanagement/swagger.json", "UserManagement");
-        configuration.SwaggerEndpoint("/swagger/useraccount/swagger.json", "UserAccount");
+        configuration.SwaggerEndpoint("authentication/swagger.json", "Authentication");
+        configuration.SwaggerEndpoint("usermanagement/swagger.json", "UserManagement");
+        configuration.SwaggerEndpoint("useraccount/swagger.json", "UserAccount");
     });
 }
 
