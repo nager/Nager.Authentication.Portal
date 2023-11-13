@@ -86,7 +86,7 @@ builder.Services.AddSwaggerGen(configuration =>
 
     #endregion
 
-    configuration.SwaggerDoc("Authentication", new OpenApiInfo
+    configuration.SwaggerDoc("authentication", new OpenApiInfo
     {
         Title = "Authentication Documentation",
         Description = "Authentication",
@@ -94,7 +94,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Version = "v1"
     });
 
-    configuration.SwaggerDoc("UserManagement", new OpenApiInfo
+    configuration.SwaggerDoc("usermanagement", new OpenApiInfo
     {
         Title = "UserManagement Documentation",
         Description = "UserManagement",
@@ -102,7 +102,7 @@ builder.Services.AddSwaggerGen(configuration =>
         Version = "v1"
     });
 
-    configuration.SwaggerDoc("UserAccount", new OpenApiInfo
+    configuration.SwaggerDoc("useraccount", new OpenApiInfo
     {
         Title = "UserAccount Documentation",
         Description = "UserAccount",
