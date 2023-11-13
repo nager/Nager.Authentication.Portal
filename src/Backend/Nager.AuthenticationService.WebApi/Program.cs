@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -62,6 +63,12 @@ builder.Services.AddAuthentication(options =>
 });
 builder.Services.AddAuthorization();
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(configuration =>
@@ -122,6 +129,8 @@ using (var serviceScope = app.Services.CreateScope())
     var userManagementService = services.GetRequiredService<IUserManagementService>();
     await InitialUserHelper.CreateUsersAsync(users, userManagementService);
 }
+
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
