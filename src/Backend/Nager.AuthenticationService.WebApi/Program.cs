@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Nager.Authentication.Abstraction.Models;
@@ -135,7 +136,24 @@ app.UseForwardedHeaders();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.UseSwagger(configuration =>
+    {
+        configuration.PreSerializeFilters.Add((swagger, httpReq) =>
+        {
+            if (httpReq.Headers.ContainsKey("X-Forwarded-Host"))
+            {
+                //The httpReq.PathBase and httpReq.Headers["X-Forwarded-Prefix"] is what we need to get the base path.
+                //For some reason, they returning as null/blank. Perhaps this has something to do with how the proxy is configured which we don't have control.
+                //For the time being, the base path is manually set here that corresponds to the APIM API Url Prefix.
+                //In this case we set it to 'sample-app'. 
+
+               var basePath = "sample-app";
+               var serverUrl = $"{httpReq.Scheme}://{httpReq.Headers["X-Forwarded-Host"]}/{basePath}";
+               swagger.Servers = new List<OpenApiServer> { new OpenApiServer { Url = serverUrl } };
+            }
+        });
+    });
+
     app.UseSwaggerUI(configuration =>
     {
         configuration.EnableTryItOutByDefault();
