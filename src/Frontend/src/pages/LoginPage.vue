@@ -32,6 +32,24 @@ async function login () {
       return
     }
 
+    if (response.status === 404) {
+      $q.notify({
+        type: 'negative',
+        message: 'Endpoint failure',
+        caption: 'Not Available'
+      })
+      return
+    }
+
+    if (response.status === 504) {
+      $q.notify({
+        type: 'negative',
+        message: 'Endpoint failure',
+        caption: 'Timeout'
+      })
+      return
+    }
+
     password.value = ''
 
     $q.notify({

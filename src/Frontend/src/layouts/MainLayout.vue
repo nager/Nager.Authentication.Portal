@@ -2,6 +2,8 @@
 
 import AuthenticatedAccount from '../components/AuthenticatedAccount.vue'
 
+const baseUrl = document.baseURI
+
 </script>
 
 <template>
@@ -28,7 +30,7 @@ import AuthenticatedAccount from '../components/AuthenticatedAccount.vue'
           stretch
           flat
           label="Swagger"
-          href="/swagger"
+          :href="`${baseUrl}swagger`"
         />
 
         <q-space />
