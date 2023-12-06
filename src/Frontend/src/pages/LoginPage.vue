@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar, LocalStorage } from 'quasar'
 
-import { apiBaseUrl } from '../helpers/apiHelper'
+import { LoginAction } from 'src/models/LoginAction'
 
-const $q = useQuasar()
+import { apiHelper } from '../helpers/apiHelper'
+
 const Router = useRouter()
 
 const loading = ref(false)
@@ -14,49 +14,21 @@ const password = ref('')
 
 async function login () {
   loading.value = true
+
   try {
-    const response = await fetch(`${apiBaseUrl}Authentication`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        emailAddress: emailAddress.value,
-        password: password.value
-      })
-    })
-
-    if (response.status === 200) {
-      const responseData = await response.json()
-
-      LocalStorage.set('token', responseData.token)
-      await Router.push('/')
-      return
+    const loginAction = await apiHelper.login(emailAddress.value, password.value)
+    switch (loginAction) {
+      case LoginAction.Forward:
+        await Router.push('/')
+        break
+      case LoginAction.ClearPassword:
+        password.value = ''
+        break
+      case LoginAction.Failure:
+        break
+      default:
+        break
     }
-
-    if (response.status === 404) {
-      $q.notify({
-        type: 'negative',
-        message: 'Endpoint failure',
-        caption: 'Not Available'
-      })
-      return
-    }
-
-    if (response.status === 504) {
-      $q.notify({
-        type: 'negative',
-        message: 'Endpoint failure',
-        caption: 'Timeout'
-      })
-      return
-    }
-
-    password.value = ''
-
-    $q.notify({
-      type: 'negative',
-      message: 'Request failure',
-      caption: 'Login not possible'
-    })
   } finally {
     loading.value = false
   }

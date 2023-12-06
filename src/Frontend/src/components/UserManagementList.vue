@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
-import { QTableProps, useQuasar, LocalStorage } from 'quasar'
+import { ref, onMounted } from 'vue'
+import { QTableProps, useQuasar } from 'quasar'
 
 import { User } from 'src/models/User'
 
-import { apiBaseUrl } from '../helpers/apiHelper'
+import { apiHelper } from '../helpers/apiHelper'
 
 import DefaultDialog from './DefaultDialog.vue'
 import UserEditForm from './UserEditForm.vue'
@@ -61,30 +61,11 @@ const columns : QTableProps['columns'] = [
   }
 ]
 
-const token = computed(() => {
-  return LocalStorage.getItem('token')
-})
-
 async function getUsers () {
   try {
     loading.value = true
 
-    const response = await fetch(`${apiBaseUrl}UserManagement`, {
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (response.status !== 200) {
-      $q.notify({
-        type: 'negative',
-        message: response.statusText,
-        caption: 'Cannot load users'
-      })
-    }
-
-    users.value = await response.json() as User[]
+    users.value = await apiHelper.getUsers()
   } finally {
     loading.value = false
   }
@@ -97,25 +78,9 @@ async function removeRow (row : User) {
     cancel: true,
     persistent: true
   }).onOk(async () => {
-    const response = await fetch(`${apiBaseUrl}UserManagement/${row.id}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-        'Content-Type': 'application/json'
-      }
-    })
-
-    if (response.status !== 204) {
-      $q.notify({
-        type: 'negative',
-        message: 'Request failure',
-        caption: response.statusText
-      })
-
-      return
+    if (await apiHelper.deleteUser(row.id)) {
+      await getUsers()
     }
-
-    await getUsers()
   })
 }
 

@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { LocalStorage, useQuasar } from 'quasar'
-
-import { apiBaseUrl } from '../helpers/apiHelper'
+import { ref } from 'vue'
 
 import { UserAdd } from 'src/models/UserAdd'
 
-const $q = useQuasar()
+import { apiHelper } from '../helpers/apiHelper'
 
 const emit = defineEmits
 <{(e: 'close'): void
@@ -14,34 +11,11 @@ const emit = defineEmits
 
 const form = ref<UserAdd>({})
 
-const token = computed(() => {
-  return LocalStorage.getItem('token')
-})
-
 async function create () {
-  const response = await fetch(`${apiBaseUrl}UserManagement/`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(form.value)
-  })
-
-  if (response.status === 201) {
+  if (await apiHelper.createUser(form.value)) {
     emit('close')
-    return
   }
-
-  const responseText = await response.text()
-  $q.notify({
-    type: 'negative',
-    message: response.statusText,
-    caption: responseText
-
-  })
 }
-
 </script>
 
 <template>

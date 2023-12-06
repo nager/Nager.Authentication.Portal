@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import type { PropType } from 'vue'
-import { LocalStorage, useQuasar } from 'quasar'
-
-import { apiBaseUrl } from '../helpers/apiHelper'
 
 import { User } from 'src/models/User'
 
-const $q = useQuasar()
+import { apiHelper } from '../helpers/apiHelper'
 
 const props = defineProps({
   user: {
@@ -22,60 +19,20 @@ const emit = defineEmits
 
 const newRoleName = ref<string>()
 
-const token = computed(() => {
-  return LocalStorage.getItem('token')
-})
-
 async function addRoleToUser () {
-  const response = await fetch(`${apiBaseUrl}UserManagement/${props.user.id}/Role`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      roleName: newRoleName.value
-    })
-  })
-
-  if (response.status === 204) {
-    emit('roleChanged')
+  if (!newRoleName.value) {
     return
   }
 
-  const responseText = await response.text()
-  $q.notify({
-    type: 'negative',
-    message: response.statusText,
-    caption: responseText
-
-  })
+  if (await apiHelper.addRoleToUser(props.user.id, newRoleName.value)) {
+    emit('roleChanged')
+  }
 }
 
 async function removeRoleFromUser (roleName : string) {
-  const response = await fetch(`${apiBaseUrl}UserManagement/${props.user.id}/Role`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      roleName
-    })
-  })
-
-  if (response.status === 204) {
+  if (await apiHelper.removeRoleFromUser(props.user.id, roleName)) {
     emit('roleChanged')
-    return
   }
-
-  const responseText = await response.text()
-  $q.notify({
-    type: 'negative',
-    message: response.statusText,
-    caption: responseText
-
-  })
 }
 
 </script>

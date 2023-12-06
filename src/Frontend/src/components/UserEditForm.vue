@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import type { PropType } from 'vue'
-import { LocalStorage, useQuasar } from 'quasar'
-
-import { apiBaseUrl } from '../helpers/apiHelper'
 
 import { User } from 'src/models/User'
 import { UserEdit } from 'src/models/UserEdit'
 
-const $q = useQuasar()
+import { apiHelper } from '../helpers/apiHelper'
 
 const props = defineProps({
   user: {
@@ -32,32 +29,10 @@ onMounted(() => {
   form.value.lastname = props.user.lastname
 })
 
-const token = computed(() => {
-  return LocalStorage.getItem('token')
-})
-
 async function updateUser () {
-  const response = await fetch(`${apiBaseUrl}UserManagement/${props.user.id}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(form.value)
-  })
-
-  if (response.status === 204) {
+  if (await apiHelper.updateUser(props.user.id, form.value)) {
     emit('close')
-    return
   }
-
-  const responseText = await response.text()
-  $q.notify({
-    type: 'negative',
-    message: response.statusText,
-    caption: responseText
-
-  })
 }
 
 </script>
