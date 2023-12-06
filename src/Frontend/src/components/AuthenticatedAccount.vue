@@ -1,60 +1,35 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar, LocalStorage } from 'quasar'
 
-import { apiBaseUrl } from '../helpers/apiHelper'
-import { parseToken } from '../helpers/tokenHelper'
+import { apiHelper } from '../helpers/apiHelper'
+import { tokenHelper } from '../helpers/tokenHelper'
 
-const $q = useQuasar()
 const Router = useRouter()
 
 const newPassword = ref<string>()
 
-const token = computed(() => {
-  return LocalStorage.getItem<string>('token')
-})
-
 const tokenInfo = computed(() => {
-  if (token.value === null) {
+  const token = tokenHelper.getToken()
+
+  if (token === null) {
     return
   }
 
-  return parseToken(token.value)
+  return tokenHelper.parseToken(token)
 })
 
 async function logout () {
-  LocalStorage.remove('token')
+  tokenHelper.removeToken()
   await Router.push('/login')
 }
 
 async function changePassword () {
-  const response = await fetch(`${apiBaseUrl}UserAccount/ChangePassword`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token.value}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      password: newPassword.value
-    })
-  })
-
-  if (response.status !== 204) {
-    console.error('cannot change password')
-    $q.notify({
-      type: 'negative',
-      message: response.statusText,
-      caption: 'Cannot change password'
-    })
-
+  if (!newPassword.value) {
     return
   }
 
-  $q.notify({
-    type: 'positive',
-    message: 'Password changed'
-  })
+  await apiHelper.changePassword(newPassword.value)
 }
 
 </script>

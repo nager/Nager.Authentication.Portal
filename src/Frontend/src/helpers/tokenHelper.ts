@@ -1,7 +1,21 @@
-import { date } from 'quasar'
+import { date, LocalStorage } from 'quasar'
+
+import { AuthenticationResponse } from 'src/models/AuthenticationResponse'
 import { TokenInfo } from 'src/models/TokenInfo'
 
-export function parseToken (token: string) : TokenInfo | undefined {
+function getToken () : string | null {
+  return LocalStorage.getItem<string>('token')
+}
+
+function setToken (authenticationResponse : AuthenticationResponse) {
+  LocalStorage.set('token', authenticationResponse.token)
+}
+
+function removeToken () {
+  return LocalStorage.remove('token')
+}
+
+function parseToken (token: string) : TokenInfo | undefined {
   const parts = token.split('.')
 
   if (parts.length !== 3) {
@@ -31,4 +45,11 @@ export function parseToken (token: string) : TokenInfo | undefined {
     roles,
     validAt
   }
+}
+
+export const tokenHelper = {
+  getToken,
+  setToken,
+  removeToken,
+  parseToken
 }

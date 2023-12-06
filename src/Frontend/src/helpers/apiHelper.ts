@@ -1,15 +1,14 @@
-import { Notify, LocalStorage } from 'quasar'
+import { Notify } from 'quasar'
 
 import { LoginAction } from 'src/models/LoginAction'
 import { User } from 'src/models/User'
 import { UserAdd } from 'src/models/UserAdd'
 import { UserEdit } from 'src/models/UserEdit'
+import { AuthenticationResponse } from 'src/models/AuthenticationResponse'
 
-export const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
+import { tokenHelper } from './tokenHelper'
 
-function getToken () {
-  return LocalStorage.getItem('token')
-}
+const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
 
 async function login (emailAddress : string, password : string) : Promise<LoginAction> {
   const response = await fetch(`${apiBaseUrl}Authentication`, {
@@ -22,8 +21,8 @@ async function login (emailAddress : string, password : string) : Promise<LoginA
   })
 
   if (response.status === 200) {
-    const responseData = await response.json()
-    LocalStorage.set('token', responseData.token)
+    const authenticationResponse = await response.json() as AuthenticationResponse
+    tokenHelper.setToken(authenticationResponse)
 
     return LoginAction.Forward
   }
@@ -56,7 +55,7 @@ async function login (emailAddress : string, password : string) : Promise<LoginA
 }
 
 async function getUsers () : Promise<User[]> {
-  const token = getToken()
+  const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserManagement`, {
     headers: {
@@ -79,7 +78,7 @@ async function getUsers () : Promise<User[]> {
 }
 
 async function createUser (payload : UserAdd) : Promise<boolean> {
-  const token = getToken()
+  const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserManagement/`, {
     method: 'POST',
@@ -106,7 +105,7 @@ async function createUser (payload : UserAdd) : Promise<boolean> {
 }
 
 async function updateUser (userId : string, payload : UserEdit) : Promise<boolean> {
-  const token = getToken()
+  const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserManagement/${userId}`, {
     method: 'PUT',
@@ -132,7 +131,7 @@ async function updateUser (userId : string, payload : UserEdit) : Promise<boolea
 }
 
 async function deleteUser (userId : string) : Promise<boolean> {
-  const token = getToken()
+  const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserManagement/${userId}`, {
     method: 'DELETE',
@@ -156,7 +155,7 @@ async function deleteUser (userId : string) : Promise<boolean> {
 }
 
 async function addRoleToUser (userId : string, roleName : string) : Promise<boolean> {
-  const token = getToken()
+  const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserManagement/${userId}/Role`, {
     method: 'POST',
@@ -184,8 +183,8 @@ async function addRoleToUser (userId : string, roleName : string) : Promise<bool
   return false
 }
 
-async function removeRoleFromUser (userId : string, roleName : string) {
-  const token = getToken()
+async function removeRoleFromUser (userId : string, roleName : string) : Promise<boolean> {
+  const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserManagement/${userId}/Role`, {
     method: 'DELETE',
@@ -213,6 +212,39 @@ async function removeRoleFromUser (userId : string, roleName : string) {
   return false
 }
 
+async function changePassword (newPassword : string) : Promise<boolean> {
+  const token = tokenHelper.getToken()
+
+  const response = await fetch(`${apiBaseUrl}UserAccount/ChangePassword`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      password: newPassword
+    })
+  })
+
+  if (response.status !== 204) {
+    console.error('cannot change password')
+    Notify.create({
+      type: 'negative',
+      message: response.statusText,
+      caption: 'Cannot change password'
+    })
+
+    return false
+  }
+
+  Notify.create({
+    type: 'positive',
+    message: 'Password changed'
+  })
+
+  return true
+}
+
 export const apiHelper = {
   login,
   getUsers,
@@ -220,5 +252,6 @@ export const apiHelper = {
   updateUser,
   deleteUser,
   addRoleToUser,
-  removeRoleFromUser
+  removeRoleFromUser,
+  changePassword
 }

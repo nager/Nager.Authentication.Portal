@@ -1,8 +1,9 @@
 import { boot } from 'quasar/wrappers'
-import { LocalStorage } from 'quasar'
+
+import { tokenHelper } from '../helpers/tokenHelper'
 
 function isLoggedIn () : boolean {
-  const token = LocalStorage.getItem<string>('token')
+  const token = tokenHelper.getToken()
   if (token === null) {
     return false
   }
