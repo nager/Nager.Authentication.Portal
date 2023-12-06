@@ -3,16 +3,18 @@ import { date, LocalStorage } from 'quasar'
 import { AuthenticationResponse } from 'src/models/AuthenticationResponse'
 import { TokenInfo } from 'src/models/TokenInfo'
 
+const authenticationTokenKey = 'authenticationToken'
+
 function getToken () : string | null {
-  return LocalStorage.getItem<string>('token')
+  return LocalStorage.getItem<string>(authenticationTokenKey)
 }
 
 function setToken (authenticationResponse : AuthenticationResponse) {
-  LocalStorage.set('token', authenticationResponse.token)
+  LocalStorage.set(authenticationTokenKey, authenticationResponse.token)
 }
 
 function removeToken () {
-  return LocalStorage.remove('token')
+  return LocalStorage.remove(authenticationTokenKey)
 }
 
 function parseToken (token: string) : TokenInfo | undefined {
