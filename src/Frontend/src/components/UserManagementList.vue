@@ -55,7 +55,7 @@ const columns : QTableProps['columns'] = [
     style: 'width: 180px'
   },
   {
-    name: 'roles2',
+    name: 'lastSuccessfulValidationTimestamp',
     required: true,
     label: 'Last Successful Validation',
     align: 'left',
@@ -68,7 +68,8 @@ const columns : QTableProps['columns'] = [
     required: true,
     label: 'Actions',
     align: 'right',
-    field: 'actions'
+    field: 'actions',
+    style: 'width: 120px'
   }
 ]
 

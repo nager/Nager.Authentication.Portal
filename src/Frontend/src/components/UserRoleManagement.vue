@@ -56,14 +56,12 @@ async function removeRoleFromUser (roleName : string) {
   </q-input>
 
   <q-card
+    v-if="user.roles && user.roles.length > 0"
     flat
     bordered
   >
     <q-card-section class="q-pa-none">
-      <q-list
-        v-if="user.roles && user.roles.length > 0"
-        separator
-      >
+      <q-list separator>
         <q-item-label header>
           Current Roles
         </q-item-label>
