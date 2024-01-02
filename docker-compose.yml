@@ -10,7 +10,7 @@ services:
       AUTHENTICATION__TOKENS__AUDIENCE: ChangeMe
       AUTHENTICATION__TOKENS__SIGNINGKEY: ChangeMe
     ports:
-      - 80:80
+      - 80:8080
     depends_on:
       - database
 
