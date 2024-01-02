@@ -26,7 +26,11 @@ namespace Nager.AuthenticationService.MssqlRepository
                 query = query.Where(predicate);
             }
 
-            return await query.Skip(skip).Take(take).ToArrayAsync(cancellationToken);
+            return await query
+                .OrderBy(o => o.Id)
+                .Skip(skip)
+                .Take(take)
+                .ToArrayAsync(cancellationToken);
         }
 
         public async Task<UserEntity?> GetAsync(
