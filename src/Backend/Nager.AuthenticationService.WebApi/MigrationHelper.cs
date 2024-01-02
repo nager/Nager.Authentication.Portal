@@ -3,11 +3,19 @@ using Nager.AuthenticationService.MssqlRepository;
 
 namespace Nager.AuthenticationService.WebApi
 {
+    /// <summary>
+    /// MigrationHelper
+    /// </summary>
     public class MigrationHelper
     {
         private readonly ILogger<MigrationHelper> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
+        /// <summary>
+        /// MigrationHelper
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="serviceScopeFactory"></param>
         public MigrationHelper(
             ILogger<MigrationHelper> logger,
             IServiceScopeFactory serviceScopeFactory)
@@ -16,6 +24,10 @@ namespace Nager.AuthenticationService.WebApi
             this._serviceScopeFactory = serviceScopeFactory;
         }
 
+        /// <summary>
+        /// Update the database structure
+        /// </summary>
+        /// <returns></returns>
         public async Task<bool> UpdateDatabaseAsync()
         {
             var retryCount = 60;

@@ -94,7 +94,7 @@ namespace Nager.AuthenticationService.MssqlRepository
         {
             var updatedRows = await this._databaseContext.Users
                 .Where(predicate)
-                .ExecuteUpdateAsync(s => s.SetProperty(e => e.LastValidationTimestamp, DateTime.UtcNow), cancellationToken);
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.LastFailedValidationTimestamp, DateTime.UtcNow), cancellationToken);
 
             return updatedRows > 0;
         }

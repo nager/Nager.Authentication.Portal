@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { QTableProps, useQuasar } from 'quasar'
+import { QTableProps, useQuasar, date } from 'quasar'
 
 import { User } from 'src/models/User'
 
@@ -26,31 +26,42 @@ const columns : QTableProps['columns'] = [
     label: 'Email Address',
     align: 'left',
     field: row => row.emailAddress,
-    format: val => `${val}`
+    format: val => `${val}`,
+    style: 'width: 300px'
+  },
+  {
+    name: 'name',
+    required: true,
+    label: 'Name',
+    align: 'left',
+    field: row => row,
+    format: row => `${row.lastname} ${row.firstname}`,
+    style: 'width: 300px'
   },
   {
     name: 'roles',
     required: true,
     label: 'Roles',
     align: 'left',
-    field: row => row.roles,
-    format: val => `${val}`
+    field: row => row.roles
   },
   {
-    name: 'firstname',
+    name: 'lastFailedValidationTimestamp',
     required: true,
-    label: 'Firstname',
+    label: 'Last Failed Validation',
     align: 'left',
-    field: row => row.firstname,
-    format: val => `${val}`
+    field: row => row.lastValidationTimestamp,
+    format: val => date.formatDate(val, 'YYYY-MM-DD HH:mm'),
+    style: 'width: 180px'
   },
   {
-    name: 'lastname',
+    name: 'roles2',
     required: true,
-    label: 'Lastname',
+    label: 'Last Successful Validation',
     align: 'left',
-    field: row => row.lastname,
-    format: val => `${val}`
+    field: row => row.lastSuccessfulValidationTimestamp,
+    format: val => date.formatDate(val, 'YYYY-MM-DD HH:mm'),
+    style: 'width: 180px'
   },
   {
     name: 'actions',

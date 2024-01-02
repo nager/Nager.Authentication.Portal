@@ -47,7 +47,7 @@ builder.Services.AddAuthentication(options =>
 {
     var issuer = builder.Configuration["Authentication:Tokens:Issuer"];
     var audience = builder.Configuration["Authentication:Tokens:Audience"];
-    var signingKey = builder.Configuration["Authentication:Tokens:SigningKey"];
+    var signingKey = builder.Configuration["Authentication:Tokens:SigningKey"] ?? throw new NullReferenceException("Missing configuration for SigningKey");
 
     //configuration.RequireHttpsMetadata = false;
     configuration.SaveToken = true;
@@ -169,10 +169,7 @@ app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-    endpoints.MapFallbackToFile("index.html");
-});
+app.MapFallbackToFile("index.html");
+app.MapControllers();
 
 app.Run();
