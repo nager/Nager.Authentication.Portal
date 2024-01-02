@@ -50,7 +50,7 @@ const columns : QTableProps['columns'] = [
     required: true,
     label: 'Last Failed Validation',
     align: 'left',
-    field: row => row.lastValidationTimestamp,
+    field: row => row.lastFailedValidationTimestamp,
     format: val => date.formatDate(val, 'YYYY-MM-DD HH:mm'),
     style: 'width: 180px'
   },
