@@ -26,6 +26,7 @@ async function addRoleToUser () {
 
   if (await apiHelper.addRoleToUser(props.user.id, newRoleName.value)) {
     emit('roleChanged')
+    newRoleName.value = ''
   }
 }
 
@@ -38,9 +39,22 @@ async function removeRoleFromUser (roleName : string) {
 </script>
 
 <template>
-  <div class="text-subtitle1 q-mt-xl">
-    Roles
-  </div>
+  <q-input
+    v-model="newRoleName"
+    class="q-mb-md"
+    label="Add new Role"
+    outlined
+  >
+    <template #append>
+      <q-btn
+        dense
+        flat
+        icon="add"
+        @click="addRoleToUser()"
+      />
+    </template>
+  </q-input>
+
   <q-card
     flat
     bordered
@@ -50,6 +64,10 @@ async function removeRoleFromUser (roleName : string) {
         v-if="user.roles && user.roles.length > 0"
         separator
       >
+        <q-item-label header>
+          Current Roles
+        </q-item-label>
+        <q-separator />
         <q-item
           v-for="role in user.roles"
           :key="role"
@@ -61,6 +79,7 @@ async function removeRoleFromUser (roleName : string) {
           <q-item-section side>
             <q-btn
               flat
+              dense
               outline
               icon="delete"
               @click="removeRoleFromUser(role)"
@@ -70,19 +89,4 @@ async function removeRoleFromUser (roleName : string) {
       </q-list>
     </q-card-section>
   </q-card>
-
-  <div class="text-subtitle2 q-mt-md">
-    Add Role
-  </div>
-  <q-input
-    v-model="newRoleName"
-    label="Role"
-    outlined
-  />
-  <q-btn
-    class="q-mt-sm"
-    label="Add"
-    outline
-    @click="addRoleToUser()"
-  />
 </template>

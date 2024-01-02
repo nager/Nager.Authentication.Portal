@@ -1,13 +1,11 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+
+# Avoid SQL Globalization Error
+RUN apk add icu-libs
+ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
 
 # Listen ports
-EXPOSE 80
-
-# Install cultures (same approach as Alpine SDK image)
-RUN apk add --no-cache icu-libs
-
-# Disable the invariant mode (set in base image)
-ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=false
+EXPOSE 8080
 
 # Copy files from other build jobs
 COPY publish .

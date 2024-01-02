@@ -20,8 +20,8 @@ namespace Nager.AuthenticationService.MssqlRepository
             Expression<Func<UserEntity, bool>>? predicate = default,
             CancellationToken cancellationToken = default)
         {
-            var query = this._databaseContext.Users.AsQueryable();
-            if (predicate != null )
+            var query = this._databaseContext.Users.AsNoTracking().AsQueryable();
+            if (predicate != null)
             {
                 query = query.Where(predicate);
             }
@@ -33,7 +33,7 @@ namespace Nager.AuthenticationService.MssqlRepository
             Expression<Func<UserEntity, bool>> predicate,
             CancellationToken cancellationToken = default)
         {
-            var query = this._databaseContext.Users.AsQueryable();
+            var query = this._databaseContext.Users.AsNoTracking().AsQueryable();
             if (predicate != null)
             {
                 query = query.Where(predicate);
@@ -77,11 +77,33 @@ namespace Nager.AuthenticationService.MssqlRepository
             Expression<Func<UserEntity, bool>> predicate,
             CancellationToken cancellationToken = default)
         {
-            var items = await this._databaseContext.Users.Where(predicate).ToArrayAsync(cancellationToken);
-            this._databaseContext.Users.RemoveRange(items);
-            await this._databaseContext.SaveChangesAsync(cancellationToken);
+            var totalRowsDeleted = await this._databaseContext.Users
+                .Where(predicate)
+                .ExecuteDeleteAsync(cancellationToken);
 
-            return true;
+            return totalRowsDeleted > 0;
+        }
+
+        public async Task<bool> SetLastValidationTimestampAsync(
+            Expression<Func<UserEntity, bool>> predicate,
+            CancellationToken cancellationToken = default)
+        {
+            var updatedRows = await this._databaseContext.Users
+                .Where(predicate)
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.LastValidationTimestamp, DateTime.UtcNow), cancellationToken);
+
+            return updatedRows > 0;
+        }
+
+        public async Task<bool> SetLastSuccessfulValidationTimestampAsync(
+            Expression<Func<UserEntity, bool>> predicate,
+            CancellationToken cancellationToken = default)
+        {
+            var updatedRows = await this._databaseContext.Users
+                .Where(predicate)
+                .ExecuteUpdateAsync(s => s.SetProperty(e => e.LastSuccessfulValidationTimestamp, DateTime.UtcNow), cancellationToken);
+
+            return updatedRows > 0;
         }
     }
 }

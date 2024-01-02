@@ -173,21 +173,33 @@ onMounted(async () => {
 
   <DefaultDialog
     :dialog-visible="showEditDialog"
+    :padding="false"
     title="Edit User"
     @hide="showEditDialog = false"
   >
-    <UserEditForm
-      v-if="editUser"
-      :user="editUser"
-      @close="editDone()"
-    />
+    <div class="text-subtitle2 q-pa-md bg-grey-4">
+      Common
+    </div>
 
-    <UserRoleManagement
-      v-if="editUser"
-      class="q-mt-xl"
-      :user="editUser"
-      @role-changed="editDone()"
-    />
+    <div class="q-pa-md q-mb-md">
+      <UserEditForm
+        v-if="editUser"
+        :user="editUser"
+        @close="editDone()"
+      />
+    </div>
+
+    <div class="text-subtitle2 q-pa-md bg-grey-4">
+      Roles
+    </div>
+    <div class="q-pa-md">
+      <UserRoleManagement
+        v-if="editUser"
+        class="q-mt-xl"
+        :user="editUser"
+        @role-changed="editDone()"
+      />
+    </div>
   </DefaultDialog>
 
   <DefaultDialog
