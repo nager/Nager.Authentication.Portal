@@ -9,6 +9,7 @@ const emit = defineEmits
 <{(e: 'close'): void
 }>()
 
+const isPassword = ref(true)
 const form = ref<UserAdd>({})
 
 async function create () {
@@ -16,6 +17,18 @@ async function create () {
     emit('close')
   }
 }
+
+function createPassword () {
+  const length = 20
+  const allowedCharacters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+!@-#.'
+
+  const randomPassword = Array.from(crypto.getRandomValues(new Uint32Array(length)))
+    .map((x) => allowedCharacters[x % allowedCharacters.length])
+    .join('')
+
+  form.value.password = randomPassword
+}
+
 </script>
 
 <template>
@@ -30,10 +43,29 @@ async function create () {
     />
     <q-input
       v-model="form.password"
-      type="password"
+      :type="isPassword ? 'password' : 'text'"
       label="Password"
       outlined
-    />
+    >
+      <template #append>
+        <q-icon
+          :name="isPassword ? 'visibility_off' : 'visibility'"
+          class="cursor-pointer"
+          @click="isPassword = !isPassword"
+        />
+      </template>
+      <template #after>
+        <q-btn
+          dense
+          stretch
+          flat
+          icon="password"
+          title="Create random password"
+          @click="createPassword"
+        />
+      </template>
+    </q-input>
+
     <q-input
       v-model="form.firstname"
       label="Firstname"
