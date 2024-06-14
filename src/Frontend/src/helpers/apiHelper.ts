@@ -68,7 +68,7 @@ async function getUsers () : Promise<User[]> {
     Notify.create({
       type: 'negative',
       message: response.statusText,
-      caption: 'Cannot load users'
+      caption: `${response.status} - Cannot load users`
     })
 
     return []
@@ -245,6 +245,53 @@ async function changePassword (newPassword : string) : Promise<boolean> {
   return true
 }
 
+async function mfa () : Promise<undefined> {
+  const token = tokenHelper.getToken()
+
+  const response = await fetch(`${apiBaseUrl}UserAccount/Mfa`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  return await response.json()
+}
+
+async function mfaActivate (mfaToken: string) : Promise<undefined> {
+  const token = tokenHelper.getToken()
+
+  const response = await fetch(`${apiBaseUrl}UserAccount/Mfa/Activate`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      token: mfaToken
+    })
+  })
+
+  return await response.json()
+}
+
+async function mfaDeactivate (mfaToken: string) : Promise<undefined> {
+  const token = tokenHelper.getToken()
+
+  const response = await fetch(`${apiBaseUrl}UserAccount/Mfa/Deactivate`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      token: mfaToken
+    })
+  })
+
+  return await response.json()
+}
+
 export const apiHelper = {
   login,
   getUsers,
@@ -253,5 +300,8 @@ export const apiHelper = {
   deleteUser,
   addRoleToUser,
   removeRoleFromUser,
-  changePassword
+  changePassword,
+  mfa,
+  mfaActivate,
+  mfaDeactivate
 }

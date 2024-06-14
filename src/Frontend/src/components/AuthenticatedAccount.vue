@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
-import { apiHelper } from '../helpers/apiHelper'
 import { tokenHelper } from '../helpers/tokenHelper'
 
 const Router = useRouter()
-
-const newPassword = ref<string>()
 
 const tokenInfo = computed(() => {
   const token = tokenHelper.getToken()
@@ -22,14 +19,6 @@ const tokenInfo = computed(() => {
 async function logout () {
   tokenHelper.removeToken()
   await Router.push('/login')
-}
-
-async function changePassword () {
-  if (!newPassword.value) {
-    return
-  }
-
-  await apiHelper.changePassword(newPassword.value)
 }
 
 </script>
@@ -64,41 +53,25 @@ async function changePassword () {
         :label="role"
       />
     </div>
-    <div class="row no-wrap q-pa-md">
-      <div class="column">
-        <q-form>
-          <q-input
-            v-model="newPassword"
-            label="New Password"
-            autocomplete="new-password"
-            type="password"
-            class="q-mb-sm"
-            dense
-            outlined
-          />
-          <q-btn
-            outline
-            label="Change Password"
-            @click="changePassword()"
-          />
-        </q-form>
-      </div>
-
-      <q-separator
-        vertical
-        inset
-        class="q-mx-lg"
+    <div>
+      <q-btn
+        v-close-popup
+        to="/account"
+        square
+        icon="person"
+        label="Account"
+        class="full-width q-pa-md"
+        flat
       />
-
-      <div class="column items-center">
-        <q-btn
-          v-close-popup
-          color="primary"
-          label="Logout"
-          outline
-          @click="logout"
-        />
-      </div>
+      <q-btn
+        v-close-popup
+        square
+        icon="logout"
+        label="Logout"
+        class="full-width q-pa-md"
+        flat
+        @click="logout()"
+      />
     </div>
   </q-btn-dropdown>
 </template>

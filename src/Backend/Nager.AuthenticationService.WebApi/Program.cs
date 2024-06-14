@@ -12,17 +12,25 @@ using Nager.AuthenticationService.MssqlRepository;
 using Nager.AuthenticationService.WebApi;
 using System.Text;
 
-var users = new UserInfoWithPassword[]
+var builder = WebApplication.CreateBuilder(args);
+
+var initialUser1EmailAddress = builder.Configuration["Authentication:InitialUser:EmailAddress"];
+var initialUser1Password = builder.Configuration["Authentication:InitialUser:Password"];
+
+if (string.IsNullOrEmpty(initialUser1EmailAddress) || string.IsNullOrEmpty(initialUser1Password))
+{
+    throw new Exception("InitialUser config missing");
+}
+
+var initialUsers = new UserInfoWithPassword[]
 {
     new UserInfoWithPassword
     {
-        EmailAddress = "admin@domain.com",
-        Password = "password",
-        Roles = new [] { "administrator" }
+        EmailAddress = initialUser1EmailAddress,
+        Password = initialUser1Password,
+        Roles = ["administrator"]
     }
 };
-
-var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMemoryCache();
 
@@ -79,6 +87,35 @@ builder.Services.AddSwaggerGen(configuration =>
     //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     //configuration.IncludeXmlComments(xmlPath);
 
+    configuration.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"JWT Authorization header using the Bearer scheme. 
+                      Enter 'Bearer' [space] and then your token in the text input below.
+                      Example: 'Bearer 12345abcdef'",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    configuration.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header
+            },
+            Array.Empty<string>()
+        }
+    });
+
     foreach (var filePath in Directory.GetFiles(AppContext.BaseDirectory, "*.xml", SearchOption.TopDirectoryOnly))
     {
         configuration.IncludeXmlComments(filePath);
@@ -127,7 +164,7 @@ using (var serviceScope = app.Services.CreateScope())
     var services = serviceScope.ServiceProvider;
 
     var userManagementService = services.GetRequiredService<IUserManagementService>();
-    await InitialUserHelper.CreateUsersAsync(users, userManagementService);
+    await InitialUserHelper.CreateUsersAsync(initialUsers, userManagementService);
 }
 
 app.UseForwardedHeaders();
@@ -146,7 +183,7 @@ if (app.Environment.IsDevelopment())
 
                 var basePath = "auth";
                 var serverUrl = $"{proto}://{host}/{basePath}";
-                swagger.Servers = new List<OpenApiServer> { new OpenApiServer { Url = serverUrl } };
+                swagger.Servers = [new OpenApiServer { Url = serverUrl }];
             }
         });
     });
@@ -171,5 +208,18 @@ app.UseAuthorization();
 
 app.MapFallbackToFile("index.html");
 app.MapControllers();
+
+//using (var serviceScope = app.Services.CreateScope())
+//{
+//    var services = serviceScope.ServiceProvider;
+
+//    var userManagementService = services.GetRequiredService<IUserRepository>();
+//    var xxx = await userManagementService.GetAsync(o => o.EmailAddress.Equals("admin@domain.com"));
+
+//    var userAccountService = services.GetRequiredService<IUserAccountService>();
+//    await userAccountService.GetMfaInformationAsync("admin@domain.com");
+
+//}
+
 
 app.Run();

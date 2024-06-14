@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { QTableProps, useQuasar, date } from 'quasar'
 
 import { User } from 'src/models/User'
@@ -14,10 +14,25 @@ import UserAddForm from './UserAddForm.vue'
 const $q = useQuasar()
 
 const loading = ref<boolean>()
-const users = ref<User[]>()
+const filter = ref<string>('')
+const users = ref<User[]>([])
 const editUser = ref<User>()
 const showAddDialog = ref(false)
 const showEditDialog = ref(false)
+
+const filteredUsers = computed(() => {
+  if (!users.value) {
+    return []
+  }
+
+  if (!filter.value) {
+    return users.value
+  }
+
+  return users.value.filter(o => {
+    return o.emailAddress.toLowerCase().includes(filter.value.toLowerCase())
+  })
+})
 
 const columns : QTableProps['columns'] = [
   {
@@ -118,25 +133,39 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="text-right">
-    <q-btn
-      class="q-mb-sm"
-      outline
-      icon="person"
-      label="Add User"
-      @click="showAddDialog = true"
-    />
-  </div>
-
   <q-table
     flat
     bordered
-    title="Users"
-    :rows="users"
+    :rows="filteredUsers"
+    :rows-per-page-options="[20, 50, 0]"
     :columns="columns"
-    row-key="name"
+    row-key="emailAddress"
     :loading="loading"
   >
+    <template #top>
+      <q-input
+        v-model="filter"
+        outlined
+        dense
+        debounce="100"
+        color="primary"
+        style="width: 400px"
+      >
+        <template #append>
+          <q-icon name="search" />
+        </template>
+      </q-input>
+
+      <q-space />
+      <q-btn
+        class="q-mb-sm"
+        outline
+        icon="person"
+        label="Add User"
+        @click="showAddDialog = true"
+      />
+    </template>
+
     <template #body-cell-firstname="props">
       <q-td :props="props">
         {{ props.row.firstname }}
@@ -157,7 +186,7 @@ onMounted(async () => {
           outline
           color="blue"
           :label="role"
-          class="q-mr-sm q-pa-sm"
+          class="q-mr-sm q-pa-xs"
         />
       </q-td>
     </template>

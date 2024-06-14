@@ -3,6 +3,8 @@
 
 <template>
   <q-page padding>
-    Welcome in the Admin Area
+    <h1>Admin Area</h1>
+
+    Welcome to the admin area where users can be managed.
   </q-page>
 </template>

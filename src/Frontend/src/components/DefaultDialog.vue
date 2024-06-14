@@ -72,6 +72,8 @@ const showDialog = computed({
             flat
             dense
             icon="close"
+            stretch
+            class="q-px-sm"
           />
         </q-toolbar>
       </q-header>

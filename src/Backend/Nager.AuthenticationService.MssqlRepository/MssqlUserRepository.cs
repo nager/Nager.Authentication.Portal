@@ -71,6 +71,9 @@ namespace Nager.AuthenticationService.MssqlRepository
             existingItem.EmailAddress = entity.EmailAddress;
             existingItem.RolesData = entity.RolesData;
             existingItem.PasswordHash = entity.PasswordHash;
+            existingItem.IsLocked = entity.IsLocked;
+            existingItem.MfaSecret = entity.MfaSecret;
+            existingItem.MfaActive = entity.MfaActive;
 
             await this._databaseContext.SaveChangesAsync(cancellationToken);
 

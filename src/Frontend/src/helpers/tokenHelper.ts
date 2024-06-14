@@ -36,8 +36,6 @@ function parseToken (token: string) : TokenInfo | undefined {
     } else {
       roles.push(tokenObject[roleKey])
     }
-
-    console.log(tokenObject[roleKey])
   }
 
   return {
