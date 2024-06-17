@@ -1,10 +1,8 @@
 import { Notify } from 'quasar'
 
-import { LoginAction } from 'src/models/LoginAction'
 import { User } from 'src/models/User'
 import { UserAdd } from 'src/models/UserAdd'
 import { UserEdit } from 'src/models/UserEdit'
-import { AuthenticationResponse } from 'src/models/AuthenticationResponse'
 
 import { MfaError } from 'src/models/MfaError'
 import { MfaSuccess } from 'src/models/MfaSuccess'
@@ -14,50 +12,6 @@ import { MfaInformation } from 'src/models/MfaInformation'
 import { tokenHelper } from './tokenHelper'
 
 const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
-
-async function login (emailAddress : string, password : string) : Promise<LoginAction> {
-  const response = await fetch(`${apiBaseUrl}Authentication`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      emailAddress,
-      password
-    })
-  })
-
-  if (response.status === 200) {
-    const authenticationResponse = await response.json() as AuthenticationResponse
-    tokenHelper.setToken(authenticationResponse)
-
-    return LoginAction.Forward
-  }
-
-  if (response.status === 404) {
-    Notify.create({
-      type: 'negative',
-      message: 'Endpoint failure',
-      caption: 'Not Available'
-    })
-    return LoginAction.Failure
-  }
-
-  if (response.status === 504) {
-    Notify.create({
-      type: 'negative',
-      message: 'Endpoint failure',
-      caption: 'Timeout'
-    })
-    return LoginAction.Failure
-  }
-
-  Notify.create({
-    type: 'negative',
-    message: 'Request failure',
-    caption: 'Login not possible'
-  })
-
-  return LoginAction.ClearPassword
-}
 
 async function getUsers () : Promise<User[]> {
   const token = tokenHelper.getToken()
@@ -306,7 +260,6 @@ async function mfaDeactivate (mfaToken: string) : Promise<MfaResponse> {
 }
 
 export const apiHelper = {
-  login,
   getUsers,
   createUser,
   updateUser,

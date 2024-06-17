@@ -14,6 +14,7 @@ const step = ref(1)
 const stepper = ref<QStepper>()
 const mfa = ref<MfaInformation>()
 const token = ref('')
+const processing = ref(false)
 
 onMounted(async () => {
   await getMfaStatus()
@@ -25,6 +26,7 @@ async function getMfaStatus () {
 
 async function activate () {
   try {
+    processing.value = true
     const mfaResponse = await apiHelper.mfaActivate(token.value)
 
     if (instanceOfMfaError(mfaResponse)) {
@@ -32,20 +34,22 @@ async function activate () {
         type: 'negative',
         caption: (mfaResponse as MfaError).error
       })
-
-      return
     }
+  } catch (e) {
+    console.error(e)
+  } finally {
+    processing.value = false
+
+    await getMfaStatus()
 
     token.value = ''
     step.value = 1
-  } catch (e) {
-    console.error(e)
   }
-  await getMfaStatus()
 }
 
 async function deactivate () {
   try {
+    processing.value = true
     const mfaResponse = await apiHelper.mfaDeactivate(token.value)
 
     if (instanceOfMfaError(mfaResponse)) {
@@ -58,6 +62,8 @@ async function deactivate () {
     token.value = ''
   } catch (e) {
     console.error(e)
+  } finally {
+    processing.value = false
   }
   await getMfaStatus()
 }
@@ -108,12 +114,14 @@ function stepperPrevious () {
         icon="password"
         :done="step > 2"
       >
-        <q-input
-          v-model="token"
-          outlined
-          label="Activation code"
-          hint="Enter the code from your authenticator app"
-        />
+        <q-form @submit.prevent="activate()">
+          <q-input
+            v-model="token"
+            outlined
+            label="Activation code"
+            hint="Enter the code from your authenticator app"
+          />
+        </q-form>
       </q-step>
 
       <template #navigation>
@@ -130,11 +138,11 @@ function stepperPrevious () {
             outline
             color="black"
             label="Activate"
+            :loading="processing"
             @click="activate()"
           />
           <q-btn
             v-if="step > 1"
-
             outline
             color="black"
             label="Back"
@@ -158,20 +166,23 @@ function stepperPrevious () {
 
         <div class="q-mt-md">
           To deactivate MFA, please provide another code.
-          <q-input
-            v-model="token"
-            outlined
-            dense
-            label="Deactivation code"
-            hint="Enter the code from your authenticator app"
-          />
-          <q-btn
-            class="q-mt-md"
-            color="black"
-            outline
-            label="Deactivate"
-            @click="deactivate()"
-          />
+          <q-form @submit.prevent="deactivate()">
+            <q-input
+              v-model="token"
+              outlined
+              dense
+              label="Deactivation code"
+              hint="Enter the code from your authenticator app"
+            />
+            <q-btn
+              type="submit"
+              class="q-mt-md"
+              color="black"
+              outline
+              label="Deactivate"
+              :loading="processing"
+            />
+          </q-form>
         </div>
       </div>
     </div>

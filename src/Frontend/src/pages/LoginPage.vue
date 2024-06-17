@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 
 import { LoginAction } from 'src/models/LoginAction'
 
-import { apiHelper } from '../helpers/apiHelper'
+import { AuthenticationHelper } from '../helpers/authenticationHelper'
 
+const authenticationHelper = new AuthenticationHelper()
+
+const $q = useQuasar()
 const Router = useRouter()
 
 const loading = ref(false)
+const oneTimePasswordRequired = ref(false)
+const totpToken = ref<undefined | string>(undefined)
 const emailAddress = ref('')
 const password = ref('')
 
@@ -16,15 +22,44 @@ async function login () {
   loading.value = true
 
   try {
-    const loginAction = await apiHelper.login(emailAddress.value, password.value)
+    const loginAction = await authenticationHelper.login(emailAddress.value, password.value)
     switch (loginAction) {
       case LoginAction.Forward:
         await Router.push('/')
+        break
+      case LoginAction.TimeBasedOneTimePasswordRequired:
+        oneTimePasswordRequired.value = true
         break
       case LoginAction.ClearPassword:
         password.value = ''
         break
       case LoginAction.Failure:
+        $q.notify({
+          type: 'negative',
+          message: 'Endpoint failure',
+          caption: 'Not Available'
+        })
+        break
+      default:
+        break
+    }
+  } finally {
+    loading.value = false
+  }
+}
+
+async function tokenLogin () {
+  if (!totpToken.value) {
+    return
+  }
+
+  loading.value = true
+
+  try {
+    const loginAction = await authenticationHelper.tokenLogin(totpToken.value)
+    switch (loginAction) {
+      case LoginAction.Forward:
+        await Router.push('/')
         break
       default:
         break
@@ -60,38 +95,62 @@ async function login () {
               bordered
               class="q-pa-lg shadow-1"
             >
-              <q-form
-                @submit.prevent="login"
-              >
-                <q-card-section class="q-gutter-md">
-                  <q-input
-                    v-model="emailAddress"
-                    square
-                    filled
-                    type="email"
-                    autocomplete="email"
-                    label="Email"
-                  />
-                  <q-input
-                    v-model="password"
-                    square
-                    filled
-                    type="password"
-                    autocomplete="current-password"
-                    label="Password"
-                  />
-                </q-card-section>
-                <q-card-actions class="q-px-md">
-                  <q-btn
-                    type="submit"
-                    unelevated
-                    color="primary"
-                    size="lg"
-                    class="full-width"
-                    label="Login"
-                  />
-                </q-card-actions>
-              </q-form>
+              <template v-if="oneTimePasswordRequired">
+                <q-form @submit.prevent="tokenLogin">
+                  <q-card-section class="q-gutter-md">
+                    <q-input
+                      v-model="totpToken"
+                      square
+                      filled
+                      type="text"
+                      autocomplete="one-time-password"
+                      label="One Time Password"
+                    />
+                  </q-card-section>
+                  <q-card-actions class="q-px-md">
+                    <q-btn
+                      type="submit"
+                      unelevated
+                      color="primary"
+                      size="lg"
+                      class="full-width"
+                      label="Login"
+                    />
+                  </q-card-actions>
+                </q-form>
+              </template>
+              <template v-else>
+                <q-form @submit.prevent="login">
+                  <q-card-section class="q-gutter-md">
+                    <q-input
+                      v-model="emailAddress"
+                      square
+                      filled
+                      type="email"
+                      autocomplete="email"
+                      label="Email"
+                    />
+                    <q-input
+                      v-model="password"
+                      square
+                      filled
+                      type="password"
+                      autocomplete="current-password"
+                      label="Password"
+                    />
+                  </q-card-section>
+                  <q-card-actions class="q-px-md">
+                    <q-btn
+                      type="submit"
+                      unelevated
+                      color="primary"
+                      size="lg"
+                      class="full-width"
+                      label="Login"
+                    />
+                  </q-card-actions>
+                </q-form>
+              </template>
             </q-card>
           </div>
           <div class="q-mt-sm text-white text-right">

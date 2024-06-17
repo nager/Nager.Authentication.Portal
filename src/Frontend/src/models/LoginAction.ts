@@ -1,5 +1,6 @@
 export enum LoginAction {
   Forward,
   ClearPassword,
-  Failure
+  Failure,
+  TimeBasedOneTimePasswordRequired
 }
