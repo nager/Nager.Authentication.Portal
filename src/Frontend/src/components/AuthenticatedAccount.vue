@@ -3,7 +3,9 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 import { tokenHelper } from '../helpers/tokenHelper'
+import { AuthenticationHelper } from '../helpers/authenticationHelper'
 
+const authenticationHelper = new AuthenticationHelper()
 const Router = useRouter()
 
 const tokenInfo = computed(() => {
@@ -17,7 +19,7 @@ const tokenInfo = computed(() => {
 })
 
 async function logout () {
-  tokenHelper.removeToken()
+  authenticationHelper.logout()
   await Router.push('/login')
 }
 

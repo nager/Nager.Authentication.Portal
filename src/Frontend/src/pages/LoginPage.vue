@@ -13,10 +13,10 @@ const $q = useQuasar()
 const Router = useRouter()
 
 const loading = ref(false)
-const oneTimePasswordRequired = ref(false)
-const totpToken = ref<undefined | string>(undefined)
 const emailAddress = ref('')
 const password = ref('')
+const oneTimePasswordRequired = ref(false)
+const totpToken = ref<undefined | string>(undefined)
 
 async function login () {
   loading.value = true
@@ -96,7 +96,7 @@ async function tokenLogin () {
               class="q-pa-lg shadow-1"
             >
               <template v-if="oneTimePasswordRequired">
-                <q-form @submit.prevent="tokenLogin">
+                <q-form @submit.prevent="tokenLogin()">
                   <q-card-section class="q-gutter-md">
                     <q-input
                       v-model="totpToken"
@@ -120,7 +120,7 @@ async function tokenLogin () {
                 </q-form>
               </template>
               <template v-else>
-                <q-form @submit.prevent="login">
+                <q-form @submit.prevent="login()">
                   <q-card-section class="q-gutter-md">
                     <q-input
                       v-model="emailAddress"

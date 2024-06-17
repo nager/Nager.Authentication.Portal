@@ -2,13 +2,15 @@
 import { ref, onMounted } from 'vue'
 import { useQuasar, QStepper } from 'quasar'
 
-import { apiHelper } from '../helpers/apiHelper'
+import { MfaHelper } from '../helpers/mfaHelper'
 
 import { instanceOfMfaError } from 'src/models/MfaResponse'
 import { MfaError } from 'src/models/MfaError'
 import { MfaInformation } from 'src/models/MfaInformation'
 
 const $q = useQuasar()
+
+const mfaHelper = new MfaHelper()
 
 const step = ref(1)
 const stepper = ref<QStepper>()
@@ -17,17 +19,17 @@ const token = ref('')
 const processing = ref(false)
 
 onMounted(async () => {
-  await getMfaStatus()
+  await getStatus()
 })
 
-async function getMfaStatus () {
-  mfa.value = await apiHelper.mfaInfo()
+async function getStatus () {
+  mfa.value = await mfaHelper.getStatus()
 }
 
 async function activate () {
   try {
     processing.value = true
-    const mfaResponse = await apiHelper.mfaActivate(token.value)
+    const mfaResponse = await mfaHelper.activate(token.value)
 
     if (instanceOfMfaError(mfaResponse)) {
       $q.notify({
@@ -40,7 +42,7 @@ async function activate () {
   } finally {
     processing.value = false
 
-    await getMfaStatus()
+    await getStatus()
 
     token.value = ''
     step.value = 1
@@ -50,7 +52,7 @@ async function activate () {
 async function deactivate () {
   try {
     processing.value = true
-    const mfaResponse = await apiHelper.mfaDeactivate(token.value)
+    const mfaResponse = await mfaHelper.deactivate(token.value)
 
     if (instanceOfMfaError(mfaResponse)) {
       $q.notify({
@@ -65,7 +67,7 @@ async function deactivate () {
   } finally {
     processing.value = false
   }
-  await getMfaStatus()
+  await getStatus()
 }
 
 async function stepperNext () {

@@ -25,7 +25,7 @@ export class AuthenticationHelper {
 
     if (response.status === 200) {
       const authenticationResponse = await response.json() as AuthenticationResponse
-      tokenHelper.setToken(authenticationResponse)
+      tokenHelper.setToken(authenticationResponse.token)
 
       this.mfaIdentifier = undefined
 
@@ -47,7 +47,7 @@ export class AuthenticationHelper {
 
     if (response.status === 200) {
       const authenticationResponse = await response.json() as AuthenticationResponse
-      tokenHelper.setToken(authenticationResponse)
+      tokenHelper.setToken(authenticationResponse.token)
 
       return LoginAction.Forward
     }
@@ -68,5 +68,9 @@ export class AuthenticationHelper {
     }
 
     return LoginAction.ClearPassword
+  }
+
+  logout () {
+    tokenHelper.removeToken()
   }
 }
