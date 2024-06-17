@@ -153,8 +153,11 @@ function stepperPrevious () {
       </template>
     </q-stepper>
     <div v-else>
-      <div>
-        <div class="mfa-box bg-green q-pa-md rounded-borders">
+      <q-card
+        flat
+        bordered
+      >
+        <q-card-section class="mfa-box bg-green q-pa-md rounded-borders">
           <q-icon
             name="security"
             color="white"
@@ -162,9 +165,8 @@ function stepperPrevious () {
             class="q-pr-md"
           />
           MFA is active
-        </div>
-
-        <div class="q-mt-md">
+        </q-card-section>
+        <q-card-section>
           To deactivate MFA, please provide another code.
           <q-form @submit.prevent="deactivate()">
             <q-input
@@ -183,8 +185,8 @@ function stepperPrevious () {
               :loading="processing"
             />
           </q-form>
-        </div>
-      </div>
+        </q-card-section>
+      </q-card>
     </div>
   </div>
 </template>
