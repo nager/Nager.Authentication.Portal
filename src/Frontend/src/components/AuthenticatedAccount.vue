@@ -59,7 +59,7 @@ async function logout () {
         to="/account"
         square
         icon="person"
-        label="Account"
+        label="My Account"
         class="full-width q-pa-md"
         flat
       />

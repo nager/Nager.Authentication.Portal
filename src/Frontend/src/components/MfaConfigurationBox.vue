@@ -1,21 +1,77 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useQuasar, QStepper } from 'quasar'
 
 import { apiHelper } from '../helpers/apiHelper'
 
-const mfa = ref()
+import { instanceOfMfaError } from 'src/models/MfaResponse'
+import { MfaError } from 'src/models/MfaError'
+import { MfaInformation } from 'src/models/MfaInformation'
+
+const $q = useQuasar()
+
+const step = ref(1)
+const stepper = ref<QStepper>()
+const mfa = ref<MfaInformation>()
 const token = ref('')
 
 onMounted(async () => {
-  mfa.value = await apiHelper.mfa()
+  await getMfaStatus()
 })
 
-function activate () {
-  apiHelper.mfaActivate(token.value)
+async function getMfaStatus () {
+  mfa.value = await apiHelper.mfaInfo()
 }
 
-function deactivate () {
-  apiHelper.mfaDeactivate(token.value)
+async function activate () {
+  try {
+    const mfaResponse = await apiHelper.mfaActivate(token.value)
+
+    if (instanceOfMfaError(mfaResponse)) {
+      $q.notify({
+        type: 'negative',
+        caption: (mfaResponse as MfaError).error
+      })
+
+      return
+    }
+
+    token.value = ''
+    step.value = 1
+  } catch (e) {
+    console.error(e)
+  }
+  await getMfaStatus()
+}
+
+async function deactivate () {
+  try {
+    const mfaResponse = await apiHelper.mfaDeactivate(token.value)
+
+    if (instanceOfMfaError(mfaResponse)) {
+      $q.notify({
+        type: 'negative',
+        caption: (mfaResponse as MfaError).error
+      })
+    }
+
+    token.value = ''
+  } catch (e) {
+    console.error(e)
+  }
+  await getMfaStatus()
+}
+
+async function stepperNext () {
+  stepper.value?.next()
+
+  if (step.value === 3) {
+    await activate()
+  }
+}
+
+function stepperPrevious () {
+  stepper.value?.previous()
 }
 
 </script>
@@ -24,36 +80,107 @@ function deactivate () {
   <h2>Multi-factor authentication</h2>
 
   <div v-if="mfa">
-    <q-checkbox
-      v-model="mfa.isActive"
-      disable
-      label="multi-factor authentication active"
-    />
-    <br>
+    <q-stepper
+      v-if="!mfa.isActive"
+      ref="stepper"
+      v-model="step"
+      flat
+      bordered
+      color="primary"
+    >
+      <q-step
+        :name="1"
+        title="Scan code"
+        icon="qr_code"
+        active-icon="qr_code"
+        :done="step > 1"
+        class="text-center"
+      >
+        <div class="q-mb-md">
+          Please scan the QR code with your Authenticator app to complete the MFA setup.
+        </div>
+        <img :src="mfa.activationQrCode">
+      </q-step>
 
-    <img :src="mfa.activationQrCode">
+      <q-step
+        :name="2"
+        title="Activate"
+        icon="password"
+        :done="step > 2"
+      >
+        <q-input
+          v-model="token"
+          outlined
+          label="Activation code"
+          hint="Enter the code from your authenticator app"
+        />
+      </q-step>
 
-    <q-input
-      v-model="token"
-      outlined
-      label="Activation code"
-      hint="Enter the code from your authenticator app"
-    />
-    <div class="q-mt-md">
-      <q-btn
-        v-if="!mfa.isActive"
-        color="black"
-        outline
-        label="Activate"
-        @click="activate()"
-      />
-      <q-btn
-        v-if="mfa.isActive"
-        color="black"
-        outline
-        label="DEactivate"
-        @click="deactivate()"
-      />
+      <template #navigation>
+        <q-stepper-navigation>
+          <q-btn
+            v-if="step < 2"
+            outline
+            color="black"
+            label="Continue"
+            @click="stepperNext()"
+          />
+          <q-btn
+            v-if="step === 2"
+            outline
+            color="black"
+            label="Activate"
+            @click="activate()"
+          />
+          <q-btn
+            v-if="step > 1"
+
+            outline
+            color="black"
+            label="Back"
+            class="q-ml-sm"
+            @click="stepperPrevious()"
+          />
+        </q-stepper-navigation>
+      </template>
+    </q-stepper>
+    <div v-else>
+      <div>
+        <div class="mfa-box bg-green q-pa-md rounded-borders">
+          <q-icon
+            name="security"
+            color="white"
+            size="3rem"
+            class="q-pr-md"
+          />
+          MFA is active
+        </div>
+
+        <div class="q-mt-md">
+          To deactivate MFA, please provide another code.
+          <q-input
+            v-model="token"
+            outlined
+            dense
+            label="Deactivation code"
+            hint="Enter the code from your authenticator app"
+          />
+          <q-btn
+            class="q-mt-md"
+            color="black"
+            outline
+            label="Deactivate"
+            @click="deactivate()"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.mfa-box {
+  font-size: 2rem;
+  color: white;
+}
+</style>

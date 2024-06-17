@@ -48,32 +48,40 @@ async function changePassword () {
 
 <template>
   <h2>Password</h2>
-  <div class="text-caption">
-    Choose a strong password that you do not use for other accounts.
-  </div>
 
-  <q-form>
-    <q-input
-      v-model="newPassword"
-      label="NewPassword"
-      autocomplete="new-password"
-      type="password"
-      class="q-mb-sm text-white bg-white"
-      outlined
-    />
-    <q-input
-      v-model="newPasswordConfirm"
-      label="Confirm NewPassword"
-      autocomplete="new-password"
-      type="password"
-      class="q-mb-sm text-white bg-white"
-      outlined
-    />
-    <q-btn
-      color="black"
-      outline
-      label="Change"
-      @click="changePassword()"
-    />
-  </q-form>
+  <q-card
+    flat
+    bordered
+  >
+    <q-card-section>
+      <div class="text-caption q-mb-md">
+        Choose a strong password that you do not use for other accounts.
+      </div>
+
+      <q-form>
+        <q-input
+          v-model="newPassword"
+          label="NewPassword"
+          autocomplete="new-password"
+          type="password"
+          class="q-mb-sm text-white bg-white"
+          outlined
+        />
+        <q-input
+          v-model="newPasswordConfirm"
+          label="Confirm NewPassword"
+          autocomplete="new-password"
+          type="password"
+          class="q-mb-sm text-white bg-white"
+          outlined
+        />
+        <q-btn
+          color="black"
+          outline
+          label="Change"
+          @click="changePassword()"
+        />
+      </q-form>
+    </q-card-section>
+  </q-card>
 </template>

@@ -209,17 +209,4 @@ app.UseAuthorization();
 app.MapFallbackToFile("index.html");
 app.MapControllers();
 
-//using (var serviceScope = app.Services.CreateScope())
-//{
-//    var services = serviceScope.ServiceProvider;
-
-//    var userManagementService = services.GetRequiredService<IUserRepository>();
-//    var xxx = await userManagementService.GetAsync(o => o.EmailAddress.Equals("admin@domain.com"));
-
-//    var userAccountService = services.GetRequiredService<IUserAccountService>();
-//    await userAccountService.GetMfaInformationAsync("admin@domain.com");
-
-//}
-
-
 app.Run();

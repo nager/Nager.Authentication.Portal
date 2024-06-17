@@ -6,6 +6,11 @@ import { UserAdd } from 'src/models/UserAdd'
 import { UserEdit } from 'src/models/UserEdit'
 import { AuthenticationResponse } from 'src/models/AuthenticationResponse'
 
+import { MfaError } from 'src/models/MfaError'
+import { MfaSuccess } from 'src/models/MfaSuccess'
+import { MfaResponse } from 'src/models/MfaResponse'
+import { MfaInformation } from 'src/models/MfaInformation'
+
 import { tokenHelper } from './tokenHelper'
 
 const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
@@ -245,7 +250,7 @@ async function changePassword (newPassword : string) : Promise<boolean> {
   return true
 }
 
-async function mfa () : Promise<undefined> {
+async function mfaInfo () : Promise<MfaInformation> {
   const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserAccount/Mfa`, {
@@ -255,10 +260,10 @@ async function mfa () : Promise<undefined> {
     }
   })
 
-  return await response.json()
+  return await response.json() as MfaInformation
 }
 
-async function mfaActivate (mfaToken: string) : Promise<undefined> {
+async function mfaActivate (mfaToken: string) : Promise<MfaResponse> {
   const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserAccount/Mfa/Activate`, {
@@ -272,10 +277,14 @@ async function mfaActivate (mfaToken: string) : Promise<undefined> {
     })
   })
 
-  return await response.json()
+  if (response.status === 204) {
+    return { success: true } as MfaSuccess
+  }
+
+  return await response.json() as MfaError
 }
 
-async function mfaDeactivate (mfaToken: string) : Promise<undefined> {
+async function mfaDeactivate (mfaToken: string) : Promise<MfaResponse> {
   const token = tokenHelper.getToken()
 
   const response = await fetch(`${apiBaseUrl}UserAccount/Mfa/Deactivate`, {
@@ -289,7 +298,11 @@ async function mfaDeactivate (mfaToken: string) : Promise<undefined> {
     })
   })
 
-  return await response.json()
+  if (response.status === 204) {
+    return { success: true } as MfaSuccess
+  }
+
+  return await response.json() as MfaError
 }
 
 export const apiHelper = {
@@ -301,7 +314,7 @@ export const apiHelper = {
   addRoleToUser,
   removeRoleFromUser,
   changePassword,
-  mfa,
+  mfaInfo,
   mfaActivate,
   mfaDeactivate
 }
