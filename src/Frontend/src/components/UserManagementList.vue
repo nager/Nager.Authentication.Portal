@@ -79,6 +79,14 @@ const columns : QTableProps['columns'] = [
     style: 'width: 180px'
   },
   {
+    name: 'mfaActive',
+    required: true,
+    label: 'Mfa Active',
+    align: 'left',
+    field: row => row.mfaActive,
+    style: 'width: 180px'
+  },
+  {
     name: 'actions',
     required: true,
     label: 'Actions',
@@ -188,6 +196,25 @@ onMounted(async () => {
           :label="role"
           class="q-mr-sm q-pa-xs"
         />
+      </q-td>
+    </template>
+
+    <template #body-cell-mfaActive="props">
+      <q-td :props="props">
+        <template v-if="props.row.mfaActive">
+          <q-icon
+            name="check_box"
+            color="green"
+            size="1.5rem"
+          />
+        </template>
+        <template v-else>
+          <q-icon
+            name="check_box_outline_blank"
+            color="red"
+            size="1.5rem"
+          />
+        </template>
       </q-td>
     </template>
 

@@ -4,4 +4,7 @@ export interface User {
   roles?: string
   firstname?: string
   lastname?: string
+  lastFailedValidationTimestamp?: string
+  lastSuccessfulValidationTimestamp?: string
+  mfaActive: boolean
 }
