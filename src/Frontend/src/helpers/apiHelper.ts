@@ -100,15 +100,15 @@ async function deleteUser (userId : string) : Promise<boolean> {
     }
   })
 
-  if (response.status !== 204) {
-    Notify.create({
-      type: 'negative',
-      message: 'Request failure',
-      caption: response.statusText
-    })
-
+  if (response.status === 204) {
     return true
   }
+
+  Notify.create({
+    type: 'negative',
+    message: 'Request failure',
+    caption: response.statusText
+  })
 
   return false
 }

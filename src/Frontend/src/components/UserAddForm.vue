@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+
+import { copyToClipboard } from 'quasar'
 
 import { UserAdd } from 'src/models/UserAdd'
 
@@ -12,21 +14,34 @@ const emit = defineEmits
 const isPassword = ref(true)
 const form = ref<UserAdd>({})
 
-async function create () {
+onMounted(() => {
+  createSecurePassword()
+})
+
+async function createUser () {
   if (await apiHelper.createUser(form.value)) {
     emit('close')
   }
 }
 
-function createPassword () {
-  const length = 20
-  const allowedCharacters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+!@-#.'
+function copyCredentials () {
+  copyToClipboard(`Username: ${form.value.emailAddress}\r\nPassword: ${form.value.password}`)
+}
 
-  const randomPassword = Array.from(crypto.getRandomValues(new Uint32Array(length)))
+function createSecurePassword () {
+  const length = 20
+
+  const allowedCharacters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+!#_-.'
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'
+
+  const randomPassword = Array.from(crypto.getRandomValues(new Uint32Array(length - 2)))
     .map((x) => allowedCharacters[x % allowedCharacters.length])
     .join('')
 
-  form.value.password = randomPassword
+  const firstChar = letters[Math.floor(Math.random() * letters.length)]
+  const lastChar = letters[Math.floor(Math.random() * letters.length)]
+
+  form.value.password = `${firstChar}${randomPassword}${lastChar}`
 }
 
 </script>
@@ -59,9 +74,9 @@ function createPassword () {
           dense
           stretch
           flat
-          icon="password"
+          icon="refresh"
           title="Create random password"
-          @click="createPassword"
+          @click="createSecurePassword"
         />
       </template>
     </q-input>
@@ -77,9 +92,15 @@ function createPassword () {
       outlined
     />
     <q-btn
-      label="Save"
+      label="Copy credentials"
+      icon="content_copy"
       outline
-      @click="create"
+      @click="copyCredentials"
+    />
+    <q-btn
+      label="Create User"
+      outline
+      @click="createUser"
     />
   </q-form>
 </template>

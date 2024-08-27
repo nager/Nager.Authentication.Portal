@@ -108,14 +108,23 @@ async function getUsers () {
 
 async function removeRow (row : User) {
   $q.dialog({
-    title: 'Delete User',
+    title: `Delete ${row.emailAddress}`,
     message: 'Do you really want to delete?',
-    cancel: true,
-    persistent: true
+    ok: {
+      label: 'Delete User',
+      color: 'negative'
+    },
+    cancel: {
+      label: 'Abort',
+      color: 'grey'
+    }
   }).onOk(async () => {
     if (await apiHelper.deleteUser(row.id)) {
+      console.log('reload 1')
       await getUsers()
     }
+
+    console.log('reload 2')
   })
 }
 
