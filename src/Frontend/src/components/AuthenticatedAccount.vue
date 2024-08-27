@@ -30,6 +30,7 @@ async function logout () {
     icon="account_circle"
     stretch
     flat
+    content-class="no-border-radius"
     label="Account"
   >
     <div
@@ -63,6 +64,7 @@ async function logout () {
         icon="person"
         label="My Account"
         class="full-width q-pa-md"
+        align="left"
         flat
       />
       <q-btn
@@ -71,6 +73,7 @@ async function logout () {
         icon="logout"
         label="Logout"
         class="full-width q-pa-md"
+        align="left"
         flat
         @click="logout()"
       />
