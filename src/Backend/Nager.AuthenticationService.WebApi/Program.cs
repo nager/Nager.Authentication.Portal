@@ -174,22 +174,24 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger(configuration =>
     {
-        configuration.PreSerializeFilters.Add((swagger, httpReq) =>
-        {
-            if (httpReq.Headers.ContainsKey("X-Forwarded-Host"))
-            {
-                var proto = httpReq.Headers["X-Forwarded-Proto"];
-                var host = httpReq.Headers["X-Forwarded-Host"];
+        configuration.RouteTemplate = "auth/swagger/{documentname}/swagger.json";
+        //configuration.PreSerializeFilters.Add((swagger, httpReq) =>
+        //{
+        //    if (httpReq.Headers.ContainsKey("X-Forwarded-Host"))
+        //    {
+        //        var proto = httpReq.Headers["X-Forwarded-Proto"];
+        //        var host = httpReq.Headers["X-Forwarded-Host"];
 
-                var basePath = "auth";
-                var serverUrl = $"{proto}://{host}/{basePath}";
-                swagger.Servers = [new OpenApiServer { Url = serverUrl }];
-            }
-        });
+        //        var basePath = "auth";
+        //        var serverUrl = $"{proto}://{host}/{basePath}";
+        //        swagger.Servers = [new OpenApiServer { Url = serverUrl }];
+        //    }
+        //});
     });
 
     app.UseSwaggerUI(configuration =>
     {
+        configuration.RoutePrefix = "auth/swagger";
         configuration.EnableTryItOutByDefault();
         configuration.DisplayRequestDuration();
         configuration.SwaggerEndpoint("authentication/swagger.json", "Authentication");
