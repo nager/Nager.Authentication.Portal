@@ -25,7 +25,7 @@ namespace Nager.AuthenticationService.MssqlRepository.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Nager.Authentication.Abstraction.Entities.UserEntity", b =>
+            modelBuilder.Entity("Nager.AuthenticationService.Abstraction.Entities.UserEntity", b =>
                 {
                     b.Property<string>("Id")
                         .HasMaxLength(200)

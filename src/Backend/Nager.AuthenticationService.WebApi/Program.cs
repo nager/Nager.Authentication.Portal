@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Nager.Authentication.Abstraction.Models;
-using Nager.Authentication.Abstraction.Services;
-using Nager.Authentication.Abstraction.Validators;
-using Nager.Authentication.Helpers;
-using Nager.Authentication.Services;
+using Nager.AuthenticationService.Abstraction;
+using Nager.AuthenticationService.Abstraction.Models;
+using Nager.AuthenticationService.Abstraction.Services;
 using Nager.AuthenticationService.MssqlRepository;
 using Nager.AuthenticationService.WebApi;
+using Nager.AuthenticationService.WebApi.Helpers;
+using Nager.AuthenticationService.WebApi.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

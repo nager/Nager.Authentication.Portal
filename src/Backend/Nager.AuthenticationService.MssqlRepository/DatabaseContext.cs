@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Nager.Authentication.Abstraction.Entities;
+using Nager.AuthenticationService.Abstraction.Entities;
 
 namespace Nager.AuthenticationService.MssqlRepository
 {

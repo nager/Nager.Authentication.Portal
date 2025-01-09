@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Nager.Authentication.Abstraction.Entities;
-using Nager.Authentication.Abstraction.Validators;
+using Nager.AuthenticationService.Abstraction;
+using Nager.AuthenticationService.Abstraction.Entities;
 using System.Linq.Expressions;
 
 namespace Nager.AuthenticationService.MssqlRepository
