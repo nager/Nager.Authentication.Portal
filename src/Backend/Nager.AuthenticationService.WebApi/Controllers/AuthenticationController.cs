@@ -19,7 +19,7 @@ namespace Nager.AuthenticationService.WebApi.Controllers
     [ApiController]
     [ApiExplorerSettings(GroupName = "authentication")]
     [Authorize]
-    [Route("api/v1/[controller]")]
+    [Route("auth/api/v1/[controller]")]
     public class AuthenticationController : ControllerBase
     {
         private readonly ILogger<AuthenticationController> _logger;

@@ -13,7 +13,7 @@ namespace Nager.AuthenticationService.WebApi.Controllers
     [ApiController]
     [ApiExplorerSettings(GroupName = "usermanagement")]
     [Authorize]
-    [Route("api/v1/[controller]")]
+    [Route("auth/api/v1/[controller]")]
     public class UserManagementController : ControllerBase
     {
         private readonly ILogger<UserManagementController> _logger;
