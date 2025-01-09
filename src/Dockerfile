@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
 
 # Avoid SQL Globalization Error
 RUN apk add icu-libs
@@ -9,5 +9,7 @@ EXPOSE 8080
 
 # Copy files from other build jobs
 COPY publish .
+
+USER $APP_UID
 
 ENTRYPOINT ["dotnet", "Nager.AuthenticationService.WebApi.dll"]
