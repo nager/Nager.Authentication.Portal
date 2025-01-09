@@ -198,12 +198,18 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UsePathBase("/auth");
+//app.UsePathBase("/auth");
 
 app.UseRouting();
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
+app.UseDefaultFiles(new DefaultFilesOptions
+{
+    RequestPath = "/auth"
+});
+app.UseStaticFiles(new StaticFileOptions
+{
+    RequestPath = "/auth"
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

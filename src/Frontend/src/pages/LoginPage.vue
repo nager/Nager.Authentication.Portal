@@ -156,8 +156,8 @@ async function tokenLogin () {
           <div class="q-mt-sm text-white text-right">
             <a
               class="text-white"
-              href="https://github.com/nager/Nager.Authentication"
-            >Nager.Authentication</a>
+              href="https://github.com/nager/Nager.AuthenticationService"
+            >Nager.AuthenticationService</a>
           </div>
         </div>
       </q-page>
