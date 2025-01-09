@@ -198,6 +198,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UsePathBase("/auth");
+
 app.UseRouting();
 
 app.UseDefaultFiles();
