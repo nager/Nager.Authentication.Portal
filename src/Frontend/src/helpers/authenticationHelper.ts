@@ -4,7 +4,7 @@ import { AuthenticationMfaResponse } from 'src/models/AuthenticationMfaResponse'
 
 import { tokenHelper } from './tokenHelper'
 
-const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
+const apiBaseUrl = '/auth/api/v1/'
 
 export class AuthenticationHelper {
   mfaIdentifier: string | undefined

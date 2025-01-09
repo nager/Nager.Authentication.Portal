@@ -1,4 +1,4 @@
-const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
+const apiBaseUrl = '/auth/api/v1/'
 
 import { MfaError } from 'src/models/MfaError'
 import { MfaSuccess } from 'src/models/MfaSuccess'

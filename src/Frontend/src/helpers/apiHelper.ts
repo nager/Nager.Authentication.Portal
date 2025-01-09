@@ -11,7 +11,7 @@ import { MfaInformation } from 'src/models/MfaInformation'
 
 import { tokenHelper } from './tokenHelper'
 
-const apiBaseUrl = process.env.NODE_ENV === 'development' ? '/api/v1/' : '/auth/api/v1/'
+const apiBaseUrl = '/auth/api/v1/'
 
 async function getUsers () : Promise<User[]> {
   const token = tokenHelper.getToken()
