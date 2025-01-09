@@ -26,7 +26,7 @@ namespace Nager.AuthenticationService.UnitTest
                 {
                     EmailAddress = "admin@domain.com",
                     Password = "secret",
-                    Roles = new [] { "Administrator" }
+                    Roles = ["Administrator"]
                 }
             };
 
@@ -67,7 +67,7 @@ namespace Nager.AuthenticationService.UnitTest
                 {
                     EmailAddress = "admin@domain.com",
                     Password = "secretPassword",
-                    Roles = new [] { "Administrator" }
+                    Roles = ["Administrator"]
                 }
             };
 
