@@ -88,7 +88,7 @@ module.exports = configure(function (ctx) {
       port: 8080,
       open: true, // opens browser window automatically
       proxy: {
-        '/api': {
+        '/auth/api': {
           target: 'http://localhost:5234',
           secure: false,
           changeOrigin: true

@@ -103,6 +103,7 @@ async function tokenLogin () {
                       square
                       filled
                       type="text"
+                      autofocus
                       autocomplete="one-time-password"
                       label="One Time Password"
                     />
