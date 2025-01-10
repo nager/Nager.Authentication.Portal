@@ -1,23 +1,48 @@
-﻿using System;
-
-namespace Nager.AuthenticationService.WebApi.Dtos
+﻿namespace Nager.AuthenticationService.WebApi.Dtos
 {
+    /// <summary>
+    /// User Info Dto
+    /// </summary>
     public class UserInfoDto
     {
-        public string Id { get; set; }
+        /// <summary>
+        /// Unique Id
+        /// </summary>
+        public required string Id { get; set; }
 
-        public string EmailAddress { get; set; }
+        /// <summary>
+        /// EmailAddress
+        /// </summary>
+        public required string EmailAddress { get; set; }
 
-        public string[] Roles { get; set; }
+        /// <summary>
+        /// Roles
+        /// </summary>
+        public string[] Roles { get; set; } = [];
 
-        public string Firstname { get; set; }
+        /// <summary>
+        /// Firstname
+        /// </summary>
+        public string? Firstname { get; set; }
 
-        public string Lastname { get; set; }
+        /// <summary>
+        /// Lastname
+        /// </summary>
+        public string? Lastname { get; set; }
 
+        /// <summary>
+        /// Last Failed Validation Timestamp
+        /// </summary>
         public DateTime? LastFailedValidationTimestamp { get; set; }
 
+        /// <summary>
+        /// Last Successful Validation Timestamp
+        /// </summary>
         public DateTime? LastSuccessfulValidationTimestamp { get; set; }
 
+        /// <summary>
+        /// Is Mfa Active
+        /// </summary>
         public bool MfaActive { get; set; }
     }
 }

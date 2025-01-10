@@ -8,12 +8,12 @@
         /// <summary>
         /// Email Address
         /// </summary>
-        public string EmailAddress { get; set; }
+        public required string EmailAddress { get; set; }
 
         /// <summary>
         /// Password
         /// </summary>
-        public string Password { get; set; }
+        public required string Password { get; set; }
 
         /// <summary>
         /// IpAddress

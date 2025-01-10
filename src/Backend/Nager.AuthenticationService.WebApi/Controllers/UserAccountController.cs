@@ -72,13 +72,13 @@ namespace Nager.AuthenticationService.WebApi.Controllers
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        /// <response code="204">Password changed</response>
+        /// <response code="200">Get Mfa Information</response>
         /// <response code="500">Unexpected error</response>
         [HttpGet]
         [Route("Mfa")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> GetMfaActivationAsync(
+        public async Task<ActionResult<MfaInformation>> GetMfaActivationAsync(
             CancellationToken cancellationToken = default)
         {
             var emailAddress = HttpContext.User.Identity?.Name;
