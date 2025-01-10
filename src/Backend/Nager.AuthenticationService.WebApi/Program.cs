@@ -146,6 +146,14 @@ builder.Services.AddSwaggerGen(configuration =>
         Contact = null,
         Version = "v1"
     });
+
+    configuration.SwaggerDoc("monitoring", new OpenApiInfo
+    {
+        Title = "Monitoring Documentation",
+        Description = "Monitoring",
+        Contact = null,
+        Version = "v1"
+    });
 });
 
 var app = builder.Build();
@@ -194,9 +202,11 @@ if (app.Environment.IsDevelopment())
         configuration.RoutePrefix = "auth/swagger";
         configuration.EnableTryItOutByDefault();
         configuration.DisplayRequestDuration();
+
         configuration.SwaggerEndpoint("authentication/swagger.json", "Authentication");
         configuration.SwaggerEndpoint("usermanagement/swagger.json", "UserManagement");
         configuration.SwaggerEndpoint("useraccount/swagger.json", "UserAccount");
+        configuration.SwaggerEndpoint("monitoring/swagger.json", "Monitoring");
     });
 }
 
