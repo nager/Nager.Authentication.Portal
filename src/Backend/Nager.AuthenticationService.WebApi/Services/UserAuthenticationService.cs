@@ -21,6 +21,7 @@ namespace Nager.AuthenticationService.WebApi.Services
         private readonly int _delayTimeMultiplier = 400; //ms
         private readonly int _maxInvalidLogins = 10;
         private readonly int _maxInvalidLoginsBeforeDelay = 3;
+        private readonly int _timeoutDatabaseUpdate = 5; //s
 
         /// <summary>
         /// User Authentication Service
@@ -172,7 +173,7 @@ namespace Nager.AuthenticationService.WebApi.Services
                 throw new NullReferenceException(nameof(userEntity.PasswordHash));
             }
 
-            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(this._timeoutDatabaseUpdate));
 
             var passwordHash = PasswordHelper.HashPasword(authenticationRequest.Password, userEntity.PasswordSalt);
             if (userEntity.PasswordHash.SequenceEqual(passwordHash))
@@ -197,7 +198,8 @@ namespace Nager.AuthenticationService.WebApi.Services
                 this.SetValidLogin(authenticationRequest.IpAddress);
                 this.SetValidLogin(authenticationRequest.EmailAddress);
 
-                await this._userRepository.SetLastSuccessfulValidationTimestampAsync(o => o.Id == userEntity.Id, cancellationTokenSource.Token);
+                await this._userRepository.SetLastSuccessfulValidationTimestampAsync(o => o.Id == userEntity.Id, cancellationTokenSource.Token)
+                    .ContinueWith(task => { }); ;
 
                 return new AuthenticationResult
                 {
@@ -208,7 +210,8 @@ namespace Nager.AuthenticationService.WebApi.Services
             this.SetInvalidLogin(authenticationRequest.IpAddress);
             this.SetInvalidLogin(authenticationRequest.EmailAddress);
 
-            await this._userRepository.SetLastValidationTimestampAsync(o => o.Id == userEntity.Id, cancellationTokenSource.Token);
+            await this._userRepository.SetLastValidationTimestampAsync(o => o.Id == userEntity.Id, cancellationTokenSource.Token)
+                .ContinueWith(task => { }); ;
 
             return new AuthenticationResult
             {
@@ -283,6 +286,10 @@ namespace Nager.AuthenticationService.WebApi.Services
             if (isTokenValid)
             {
                 this._memoryCache.Remove(cacheKey);
+
+                using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(this._timeoutDatabaseUpdate));
+                await this._userRepository.SetLastSuccessfulValidationTimestampAsync(o => o.Id == userEntity.Id, cancellationTokenSource.Token)
+                    .ContinueWith(task => { });
             }
 
             return new ValidateTokenResult
