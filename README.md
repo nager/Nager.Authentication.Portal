@@ -1,14 +1,20 @@
 # Nager.AuthenticationService
 
-This is an authentication microservice that is connected behind the `auth` path.
-This generates JWT tokens which can then be used in other services. A Microsoft SQL Server is used as the database.
+This microservice is responsible for handling authentication within your system.<br>
+It operates independently and is deployed behind the `/auth` path, allowing seamless integration into your architecture.
+
+## Features
+- **JWT Token Generation**: Issues secure JSON Web Tokens (JWT) for use in other services.
+- **Standalone Operation**: Runs independently to handle all authentication-related tasks.
+- **Database Support**: Utilizes Microsoft SQL Server for secure storage and efficient data management.
 
 ## Screenshots
 ![Demo 1](/doc/AuthenticationDemo1.png)
 ![Demo 2](/doc/AuthenticationDemo2.png)
 
+## Setup and Deployment
 
-## Docker Enviorment Variables
+### Docker Enviorment Variables
 
 | VARIABLE                             | DESCRIPTION                                                                             |
 | ------------------------------------ | --------------------------------------------------------------------------------------- |
