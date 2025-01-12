@@ -18,6 +18,7 @@ namespace Nager.AuthenticationService.WebApi.Services
         private readonly IMemoryCache _memoryCache;
         private readonly string _cacheKeyPrefix = "AuthenticationInfo";
         private readonly TimeSpan _cacheLiveTime = TimeSpan.FromMinutes(10);
+        private readonly TimeSpan _mfaTokenAcceptanceWindow = TimeSpan.FromMinutes(2);
         private readonly int _delayTimeMultiplier = 400; //ms
         private readonly int _maxInvalidLogins = 10;
         private readonly int _maxInvalidLoginsBeforeDelay = 3;
@@ -116,10 +117,7 @@ namespace Nager.AuthenticationService.WebApi.Services
             AuthenticationRequest authenticationRequest,
             CancellationToken cancellationToken = default)
         {
-            if (authenticationRequest == null)
-            {
-                throw new ArgumentNullException(nameof(authenticationRequest));
-            }
+            ArgumentNullException.ThrowIfNull(authenticationRequest);
 
             if (string.IsNullOrEmpty(authenticationRequest.IpAddress))
             {
@@ -185,7 +183,7 @@ namespace Nager.AuthenticationService.WebApi.Services
 
                     this._memoryCache.Set(cacheKey, authenticationRequest.EmailAddress, new MemoryCacheEntryOptions
                     {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(120)
+                        AbsoluteExpirationRelativeToNow = this._mfaTokenAcceptanceWindow
                     });
 
                     return new AuthenticationResult
@@ -242,11 +240,10 @@ namespace Nager.AuthenticationService.WebApi.Services
 
         /// <inheritdoc />
         public async Task<ValidateTokenResult> ValidateTokenAsync(
-            string mfaIdentifier,
-            string token,
+            ValidateTokenRequest validateTokenRequest,
             CancellationToken cancellationToken = default)
         {
-            var cacheKey = this.GetCacheKey(mfaIdentifier);
+            var cacheKey = this.GetCacheKey(validateTokenRequest.MfaIdentifier);
             if (!this._memoryCache.TryGetValue<string>(cacheKey, out var emailAddress))
             {
                 this._logger.LogError($"{nameof(ValidateTokenAsync)} - CacheKey {cacheKey} not found");
@@ -267,8 +264,6 @@ namespace Nager.AuthenticationService.WebApi.Services
                 };
             }
 
-            var timeTolerance = TimeSpan.FromSeconds(20);
-
             var userEntity = await this._userRepository.GetAsync(o => o.EmailAddress == emailAddress);
             if (userEntity == null)
             {
@@ -280,12 +275,19 @@ namespace Nager.AuthenticationService.WebApi.Services
                 };
             }
 
+            var timeTolerance = TimeSpan.FromSeconds(20);
             var twoFactorAuthenticator = new TwoFactorAuthenticator();
-            var isTokenValid = twoFactorAuthenticator.ValidateTwoFactorPIN(userEntity.MfaSecret, token, timeTolerance);
+            var isTokenValid = twoFactorAuthenticator.ValidateTwoFactorPIN(userEntity.MfaSecret, validateTokenRequest.Token, timeTolerance);
 
             if (isTokenValid)
             {
                 this._memoryCache.Remove(cacheKey);
+
+                if (!string.IsNullOrEmpty(validateTokenRequest.IpAddress))
+                {
+                    this.SetValidLogin(validateTokenRequest.IpAddress);
+                }
+                this.SetValidLogin(emailAddress);
 
                 using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(this._timeoutDatabaseUpdate));
                 await this._userRepository.SetLastSuccessfulValidationTimestampAsync(o => o.Id == userEntity.Id, cancellationTokenSource.Token)

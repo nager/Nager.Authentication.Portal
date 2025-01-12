@@ -200,7 +200,14 @@ namespace Nager.AuthenticationService.WebApi.Controllers
             [Required][FromBody] AuthenticationMfaTokenRequestDto request,
             CancellationToken cancellationToken = default)
         {
-            var validateTokenResult = await this._userAuthenticationService.ValidateTokenAsync(request.MfaIdentifier, request.Token, cancellationToken);
+            var ipAddress = HttpContext.GetIpAddress();
+
+            var validateTokenResult = await this._userAuthenticationService.ValidateTokenAsync(new ValidateTokenRequest
+            {
+                MfaIdentifier = request.MfaIdentifier,
+                Token = request.Token,
+                IpAddress = ipAddress
+            }, cancellationToken);
             if (!validateTokenResult.Success)
             {
                 return StatusCode(StatusCodes.Status400BadRequest);
@@ -224,12 +231,10 @@ namespace Nager.AuthenticationService.WebApi.Controllers
         /// <returns></returns>
         /// <response code="204">Token valid</response>
         /// <response code="401">Token invalid</response>
-        /// <response code="500">Unexpected error</response>
         [HttpPost]
         [Route("Validate")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public ActionResult<AuthenticationResponseDto> Validate()
         {
             return StatusCode(StatusCodes.Status204NoContent);

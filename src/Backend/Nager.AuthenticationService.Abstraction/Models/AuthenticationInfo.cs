@@ -9,5 +9,10 @@ namespace Nager.AuthenticationService.Abstraction.Models
         public DateTime LastInvalid { get; set; }
 
         public int InvalidCount { get; set; }
+
+        public override string ToString()
+        {
+            return $"LastValid:{this.LastValid} LastInvalid:{this.LastInvalid} InvalidCount:{this.InvalidCount}";
+        }
     }
 }

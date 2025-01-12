@@ -20,8 +20,7 @@ namespace Nager.AuthenticationService.Abstraction.Services
             CancellationToken cancellationToken = default);
 
         Task<ValidateTokenResult> ValidateTokenAsync(
-            string mfaIdentifier,
-            string token,
+            ValidateTokenRequest validateTokenRequest,
             CancellationToken cancellationToken = default);
 
         /// <summary>

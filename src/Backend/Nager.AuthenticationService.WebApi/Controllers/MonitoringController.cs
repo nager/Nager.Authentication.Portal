@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Nager.AuthenticationService.Abstraction.Models;
 using Nager.AuthenticationService.WebApi.Dtos;
 
 namespace Nager.AuthenticationService.WebApi.Controllers
@@ -53,9 +54,9 @@ namespace Nager.AuthenticationService.WebApi.Controllers
                         break;
                     }
 
-                    if (this._memoryCache.TryGetValue<int>(key, out var value))
+                    if (this._memoryCache.TryGetValue<AuthenticationInfo>(key, out var authenticationInfo))
                     {
-                        cacheItems.Add(new CacheItemDto { Key = $"{key}", Value = $"{value}" });
+                        cacheItems.Add(new CacheItemDto { Key = $"{key}", Value = $"{authenticationInfo}" });
                     }
                 }
 

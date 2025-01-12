@@ -87,7 +87,7 @@ namespace Nager.AuthenticationService.WebApi.Controllers
                 EmailAddress = userInfo.EmailAddress,
                 Firstname = userInfo.Firstname,
                 Lastname = userInfo.Lastname,
-                Roles = userInfo.Roles,
+                Roles = userInfo.Roles ?? [],
                 LastFailedValidationTimestamp = userInfo.LastFailedValidationTimestamp,
                 LastSuccessfulValidationTimestamp  = userInfo.LastSuccessfulValidationTimestamp,
                 MfaActive = userInfo.MfaActive

@@ -1,9 +1,9 @@
-﻿namespace Nager.AuthenticationService.WebApi.Dtos
+﻿namespace Nager.AuthenticationService.Abstraction.Models
 {
     /// <summary>
-    /// Authentication Mfa Token Request Dto
+    /// Validate Token Request
     /// </summary>
-    public class AuthenticationMfaTokenRequestDto
+    public class ValidateTokenRequest
     {
         /// <summary>
         /// Mfa Identifier from Authenticate request
@@ -11,8 +11,13 @@
         public required string MfaIdentifier { get; set; }
 
         /// <summary>
-        /// The one Time Token
+        /// Mfa Token
         /// </summary>
         public required string Token { get; set; }
+
+        /// <summary>
+        /// IpAddress
+        /// </summary>
+        public string? IpAddress { get; set; }
     }
 }
