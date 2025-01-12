@@ -41,7 +41,7 @@ namespace Nager.AuthenticationService.UnitTest
             return Task.FromResult(items);
         }
 
-        public Task<UserEntity> GetAsync(
+        public Task<UserEntity?> GetAsync(
             Expression<Func<UserEntity, bool>> predicate,
             CancellationToken cancellationToken = default)
         {
@@ -102,7 +102,7 @@ namespace Nager.AuthenticationService.UnitTest
         }
 
         public Task<bool> SetLastSuccessfulValidationTimestampAsync(
-            Expression<Func<UserEntity, bool>>? predicate,
+            Expression<Func<UserEntity, bool>> predicate,
             CancellationToken cancellationToken = default)
         {
             var item = this._userInfos.Values.AsQueryable().Where(predicate).FirstOrDefault();

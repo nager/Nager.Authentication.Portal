@@ -8,10 +8,18 @@ namespace Nager.AuthenticationService.WebApi.Helpers
     /// </summary>
     public static class InitialUserHelper
     {
-        public static async Task CreateUsersAsync(
+        /// <summary>
+        /// Create initial users
+        /// </summary>
+        /// <param name="items"></param>
+        /// <param name="userManagementService"></param>
+        /// <returns></returns>
+        public static async Task<bool> CreateUsersAsync(
             UserInfoWithPassword[] items,
             IUserManagementService userManagementService)
         {
+            var successful = true;
+
             foreach (var item in items)
             {
                 var userInfo = await userManagementService.GetByEmailAddressAsync(item.EmailAddress);
@@ -29,12 +37,14 @@ namespace Nager.AuthenticationService.WebApi.Helpers
                     Roles = item.Roles
                 };
 
-                var successful = await userManagementService.CreateAsync(createRequest);
-                if (!successful)
+                if (!await userManagementService.CreateAsync(createRequest))
                 {
+                    successful = false;
                     //log failure
                 }
             }
+
+            return successful;
         }
     }
 }

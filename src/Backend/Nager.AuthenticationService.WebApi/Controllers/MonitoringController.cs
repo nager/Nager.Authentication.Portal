@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Nager.AuthenticationService.WebApi.Dtos;
 
 namespace Nager.AuthenticationService.WebApi.Controllers
 {
@@ -30,7 +31,7 @@ namespace Nager.AuthenticationService.WebApi.Controllers
         }
 
         /// <summary>
-        /// Get Cache Keys
+        /// Get Cache Snapshot
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -38,21 +39,27 @@ namespace Nager.AuthenticationService.WebApi.Controllers
         [Route("Cache")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<ActionResult> GetAllCacheKeys(
+        public ActionResult<CacheItemDto> GetCacheSnapshot(
             CancellationToken cancellationToken = default)
         {
             if (this._memoryCache is MemoryCache memoryCache)
             {
-                var statistic = new List<string>();
+                var cacheItems = new List<CacheItemDto>();
 
                 foreach (var key in memoryCache.Keys)
                 {
-                    this._memoryCache.TryGetValue<int>(key, out int value);
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
 
-                    statistic.Add($"{key}:{value}");
+                    if (this._memoryCache.TryGetValue<int>(key, out var value))
+                    {
+                        cacheItems.Add(new CacheItemDto { Key = $"{key}", Value = $"{value}" });
+                    }
                 }
 
-                return StatusCode(StatusCodes.Status200OK, statistic);
+                return StatusCode(StatusCodes.Status200OK, cacheItems);
             }
 
             return StatusCode(StatusCodes.Status204NoContent);

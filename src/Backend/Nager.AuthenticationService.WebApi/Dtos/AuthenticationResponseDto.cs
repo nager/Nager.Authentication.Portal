@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Nager.AuthenticationService.WebApi.Dtos
+﻿namespace Nager.AuthenticationService.WebApi.Dtos
 {
     public class AuthenticationResponseDto
     {
