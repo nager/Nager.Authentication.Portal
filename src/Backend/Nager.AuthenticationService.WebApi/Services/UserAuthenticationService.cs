@@ -1,9 +1,10 @@
-﻿using Google.Authenticator;
+using Google.Authenticator;
 using Microsoft.Extensions.Caching.Memory;
 using Nager.AuthenticationService.Abstraction;
 using Nager.AuthenticationService.Abstraction.Models;
 using Nager.AuthenticationService.Abstraction.Services;
 using Nager.AuthenticationService.WebApi.Helpers;
+using Nager.AuthenticationService.WebApi.Models;
 
 namespace Nager.AuthenticationService.WebApi.Services
 {
@@ -16,7 +17,6 @@ namespace Nager.AuthenticationService.WebApi.Services
         private readonly ILogger<UserAuthenticationService> _logger;
         private readonly IUserRepository _userRepository;
         private readonly IMemoryCache _memoryCache;
-        private readonly string _cacheKeyPrefix = "AuthenticationInfo";
         private readonly TimeSpan _cacheLiveTime = TimeSpan.FromMinutes(10);
         private readonly TimeSpan _mfaTokenAcceptanceWindow = TimeSpan.FromMinutes(2);
         private readonly int _delayTimeMultiplier = 400; //ms
@@ -40,14 +40,14 @@ namespace Nager.AuthenticationService.WebApi.Services
             this._memoryCache = memoryCache;
         }
 
-        private string GetCacheKey(string identifier)
+        private string GetCacheKey(CacheKeyType cacheKeyType, string identifier)
         {
-            return $"{this._cacheKeyPrefix}.{identifier.Trim()}";
+            return $"{cacheKeyType}.{identifier.Trim()}";
         }
 
         private void SetInvalidLogin(string identifier)
         {
-            var cacheKey = this.GetCacheKey(identifier);
+            var cacheKey = this.GetCacheKey(CacheKeyType.AuthenticationInfo, identifier);
             if (!this._memoryCache.TryGetValue<AuthenticationInfo>(cacheKey, out var authenticationInfo))
             {
                 authenticationInfo = new AuthenticationInfo();
@@ -66,7 +66,7 @@ namespace Nager.AuthenticationService.WebApi.Services
 
         private void SetValidLogin(string identifier)
         {
-            var cacheKey = this.GetCacheKey(identifier);
+            var cacheKey = this.GetCacheKey(CacheKeyType.AuthenticationInfo, identifier);
             if (!this._memoryCache.TryGetValue<AuthenticationInfo>(cacheKey, out var authenticationInfo))
             {
                 authenticationInfo = new AuthenticationInfo();
@@ -85,7 +85,7 @@ namespace Nager.AuthenticationService.WebApi.Services
 
         private async Task<bool> IsIdentifierBlockedAsync(string identifier)
         {
-            var cacheKey = this.GetCacheKey(identifier);
+            var cacheKey = this.GetCacheKey(CacheKeyType.AuthenticationInfo, identifier);
 
             if (!this._memoryCache.TryGetValue<AuthenticationInfo>(cacheKey, out var authenticationInfo))
             {
@@ -179,7 +179,7 @@ namespace Nager.AuthenticationService.WebApi.Services
                 if (userEntity.MfaActive)
                 {
                     var mfaIdentifier = Guid.NewGuid().ToString();
-                    var cacheKey = this.GetCacheKey(mfaIdentifier);
+                    var cacheKey = this.GetCacheKey(CacheKeyType.MfaIdentifier, mfaIdentifier);
 
                     this._memoryCache.Set(cacheKey, authenticationRequest.EmailAddress, new MemoryCacheEntryOptions
                     {
@@ -243,7 +243,7 @@ namespace Nager.AuthenticationService.WebApi.Services
             ValidateTokenRequest validateTokenRequest,
             CancellationToken cancellationToken = default)
         {
-            var cacheKey = this.GetCacheKey(validateTokenRequest.MfaIdentifier);
+            var cacheKey = this.GetCacheKey(CacheKeyType.MfaIdentifier, validateTokenRequest.MfaIdentifier);
             if (!this._memoryCache.TryGetValue<string>(cacheKey, out var emailAddress))
             {
                 this._logger.LogError($"{nameof(ValidateTokenAsync)} - CacheKey {cacheKey} not found");
