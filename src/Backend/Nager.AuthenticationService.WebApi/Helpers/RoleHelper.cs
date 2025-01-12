@@ -1,23 +1,23 @@
-﻿namespace Nager.AuthenticationService.WebApi.Helpers
+namespace Nager.AuthenticationService.WebApi.Helpers
 {
     /// <summary>
     /// Role Helper
     /// </summary>
     public static class RoleHelper
     {
-        public static char RoleSeperator = ',';
+        internal static char RoleSeperator = ',';
 
         public static string[] GetRoles(string? roleData)
         {
             if (string.IsNullOrEmpty(roleData))
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             var roles = roleData.Split(RoleSeperator, StringSplitOptions.RemoveEmptyEntries);
             if (roles.Length == 0)
             {
-                return Array.Empty<string>();
+                return [];
             }
 
             return roles;

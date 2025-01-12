@@ -1,8 +1,11 @@
-﻿namespace Nager.AuthenticationService.WebApi.Helpers
+namespace Nager.AuthenticationService.WebApi.Extenstions
 {
-    public static class IpAddressHelper
+    /// <summary>
+    /// HttpContext Extension
+    /// </summary>
+    public static class HttpContextExtension
     {
-        public static string? GetIpAddress(this HttpContext httpContext)
+        internal static string? GetIpAddress(this HttpContext httpContext)
         {
             if (httpContext.Request != null)
             {

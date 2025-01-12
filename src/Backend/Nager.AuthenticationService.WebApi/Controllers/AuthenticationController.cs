@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Nager.AuthenticationService.Abstraction.Models;
 using Nager.AuthenticationService.Abstraction.Services;
 using Nager.AuthenticationService.WebApi.Dtos;
-using Nager.AuthenticationService.WebApi.Helpers;
+using Nager.AuthenticationService.WebApi.Extenstions;
 using Nager.AuthenticationService.WebApi.Models;
 using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;

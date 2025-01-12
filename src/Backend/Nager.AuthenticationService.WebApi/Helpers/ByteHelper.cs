@@ -1,4 +1,4 @@
-﻿using System.Security.Cryptography;
+using System.Security.Cryptography;
 
 namespace Nager.AuthenticationService.WebApi.Helpers
 {
@@ -16,7 +16,6 @@ namespace Nager.AuthenticationService.WebApi.Helpers
             var temp = new byte[bit / 8];
             using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(temp);
-
             return temp;
         }
     }
