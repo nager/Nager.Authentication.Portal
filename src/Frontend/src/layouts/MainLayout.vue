@@ -4,8 +4,6 @@ import { tokenHelper } from '../helpers/tokenHelper'
 
 import AuthenticatedAccount from '../components/AuthenticatedAccount.vue'
 
-const baseUrl = document.baseURI
-
 const isAdministrator = computed(() => {
   const token = tokenHelper.getToken()
   if (!token) {
@@ -44,10 +42,17 @@ const isAdministrator = computed(() => {
           to="/usermanagement"
         />
         <q-btn
+          v-if="isAdministrator"
+          stretch
+          flat
+          label="Monitoring"
+          to="/monitoring"
+        />
+        <q-btn
           stretch
           flat
           label="Swagger"
-          :href="`${baseUrl}swagger`"
+          href="/swagger"
         />
 
         <q-space />

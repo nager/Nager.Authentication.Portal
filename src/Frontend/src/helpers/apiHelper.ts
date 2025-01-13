@@ -10,6 +10,7 @@ import { MfaResponse } from 'src/models/MfaResponse'
 import { MfaInformation } from 'src/models/MfaInformation'
 
 import { tokenHelper } from './tokenHelper'
+import { CacheItem } from 'src/models/CacheItem'
 
 const apiBaseUrl = '/auth/api/v1/'
 
@@ -259,6 +260,29 @@ async function mfaDeactivate (mfaToken: string) : Promise<MfaResponse> {
   return await response.json() as MfaError
 }
 
+async function getCache () : Promise<CacheItem[]> {
+  const token = tokenHelper.getToken()
+
+  const response = await fetch(`${apiBaseUrl}Monitoring/Cache`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    }
+  })
+
+  if (response.status !== 200) {
+    Notify.create({
+      type: 'negative',
+      message: response.statusText,
+      caption: `${response.status} - Cannot load users`
+    })
+
+    return []
+  }
+
+  return await response.json() as CacheItem[]
+}
+
 export const apiHelper = {
   getUsers,
   createUser,
@@ -269,5 +293,6 @@ export const apiHelper = {
   changePassword,
   mfaInfo,
   mfaActivate,
-  mfaDeactivate
+  mfaDeactivate,
+  getCache
 }
