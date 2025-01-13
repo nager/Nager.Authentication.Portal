@@ -37,8 +37,8 @@ const filteredUsers = computed(() => {
 const columns : QTableProps['columns'] = [
   {
     name: 'emailAddress',
-    required: true,
     label: 'Email Address',
+    required: true,
     align: 'left',
     field: row => row.emailAddress,
     format: val => `${val}`,
@@ -46,8 +46,8 @@ const columns : QTableProps['columns'] = [
   },
   {
     name: 'name',
-    required: true,
     label: 'Name',
+    required: true,
     align: 'left',
     field: row => row,
     format: row => `${row.lastname} ${row.firstname}`,
@@ -55,41 +55,44 @@ const columns : QTableProps['columns'] = [
   },
   {
     name: 'roles',
-    required: true,
     label: 'Roles',
+    required: true,
     align: 'left',
     field: row => row.roles
   },
   {
     name: 'lastFailedValidationTimestamp',
-    required: true,
     label: 'Last Failed Validation',
+    required: true,
     align: 'left',
     field: row => row.lastFailedValidationTimestamp,
     format: val => date.formatDate(val, 'YYYY-MM-DD HH:mm'),
-    style: 'width: 180px'
+    style: 'width: 180px',
+    sortable: true
   },
   {
     name: 'lastSuccessfulValidationTimestamp',
-    required: true,
     label: 'Last Successful Validation',
+    required: true,
     align: 'left',
     field: row => row.lastSuccessfulValidationTimestamp,
     format: val => date.formatDate(val, 'YYYY-MM-DD HH:mm'),
-    style: 'width: 180px'
+    style: 'width: 180px',
+    sortable: true
   },
   {
     name: 'mfaActive',
-    required: true,
     label: 'Mfa Active',
+    required: true,
     align: 'left',
     field: row => row.mfaActive,
-    style: 'width: 180px'
+    style: 'width: 180px',
+    sortable: true
   },
   {
     name: 'actions',
-    required: true,
     label: 'Actions',
+    required: true,
     align: 'right',
     field: 'actions',
     style: 'width: 120px'
